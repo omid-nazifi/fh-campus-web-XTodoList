@@ -1,6 +1,7 @@
 package edu.campuswien.webproject.todolist.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.campuswien.webproject.todolist.validation.OnCreate;
 import edu.campuswien.webproject.todolist.validation.OnUpdate;
 import edu.campuswien.webproject.todolist.validation.ValidPassword;
@@ -29,9 +30,9 @@ public class UserDto implements Serializable {
     @Email(message = "Email is not valid!")
     private String username; //email
 
-    //@Getter(onMethod = @__( @JsonIgnore ))
-    //@Setter
+    @Getter(onMethod = @__( @JsonIgnore ))
+    @Setter(onMethod = @__( @JsonProperty))
     @ValidPassword(groups = OnCreate.class, message = "Password is required!")
     @Null(groups = OnUpdate.class)
-    private transient String password;
+    private String password;
 }
