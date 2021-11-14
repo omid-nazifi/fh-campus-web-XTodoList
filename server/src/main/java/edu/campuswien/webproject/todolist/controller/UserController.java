@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +29,7 @@ public class UserController {
 
     @CrossOrigin(origins = "http://localhost:8080")
     @RequestMapping(value = "register", method = RequestMethod.POST)
-    public void register(@RequestBody UserDto userDto) {
+    public void register(@Valid @RequestBody UserDto userDto) {
         if(userService.isUserAvailable(userDto.getUsername())) {
             //Error
         }
@@ -48,7 +49,7 @@ public class UserController {
     private User convertToEntity(UserDto userDto) {
         User user = modelMapper.map(userDto, User.class);
 
-        if (userDto.getId() != null) {
+        if (userDto.getId() != null && userDto.getId() != 0) {
             Optional<User> oldUser = userService.getUserById(userDto.getId());
             //post.setRedditID(oldPost.getRedditID());
         }

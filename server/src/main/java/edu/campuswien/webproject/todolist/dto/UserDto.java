@@ -29,8 +29,8 @@ public class UserDto implements Serializable {
     @Email(message = "Email is not valid!")
     private String username; //email
 
-    @Getter(onMethod = @__( @JsonIgnore ))
-    @Setter
+    //@Getter(onMethod = @__( @JsonIgnore ))
+    //@Setter
     @ValidPassword(groups = OnCreate.class, message = "Password is required!")
     @Null(groups = OnUpdate.class)
     private transient String password;
