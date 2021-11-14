@@ -1,6 +1,5 @@
 package edu.campuswien.webproject.todolist.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +9,6 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Task {
 
     @Id
@@ -18,30 +16,29 @@ public class Task {
     @Column
     private Long id;
 
-    @Column(nullable = true)
+    @Column
     private Long parentId;
 
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = true)
+    @Column
     private String description;
 
     @Column(nullable = false)
     private int status;
 
-    @Column(nullable = true)
     private LocalDateTime creationDate;
 
-    @Column(nullable = true)
+    @Column
     private LocalDateTime deadline;
 
     @Column(nullable = false)
     private int priority;
 
-    @Column(nullable = true)
+    @Column
     private String color;
 
-    @Column(nullable = true)
+    @Column
     private String tags;
 }
