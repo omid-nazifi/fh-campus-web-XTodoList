@@ -17,6 +17,9 @@ public class TaskDto {
 
     private Long parentId;
 
+    @NotNull(message = "User is required!")
+    private Long userId;
+
     @NotNull(message = "Title is required!")
     private String title;
 

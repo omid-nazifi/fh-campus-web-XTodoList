@@ -20,6 +20,9 @@ public class Task {
     private Long parentId;
 
     @Column(nullable = false)
+    private Long userId;
+
+    @Column(nullable = false)
     private String title;
 
     @Column
