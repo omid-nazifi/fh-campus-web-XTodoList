@@ -2,6 +2,8 @@ package edu.campuswien.webproject.todolist.controller;
 
 import edu.campuswien.webproject.todolist.dto.TaskDto;
 import edu.campuswien.webproject.todolist.model.Task;
+import edu.campuswien.webproject.todolist.service.Priority;
+import edu.campuswien.webproject.todolist.service.Status;
 import edu.campuswien.webproject.todolist.service.TaskService;
 import edu.campuswien.webproject.todolist.service.UserService;
 import org.modelmapper.ModelMapper;
@@ -62,7 +64,7 @@ public class TaskController {
 
     @CrossOrigin(origins="*")
     @GetMapping(path = "/parent/{parentId}")
-    public List<TaskDto> List(@PathVariable long parentId) {
+    public List<TaskDto> getAllOfParent(@PathVariable long parentId) {
         List<Task> tasks = taskService.getTasksByParentId(parentId);
         List<TaskDto> tasksData = new ArrayList<>();
         for (Task task: tasks) {
@@ -71,7 +73,21 @@ public class TaskController {
         return tasksData;
     }
 
-
+    @CrossOrigin(origins="*")
+    @GetMapping(path = {"/user/{userId}", "/user/{userId}/{status}"})
+    public List<TaskDto> getAllOfUser(@PathVariable long userId, @PathVariable(required = false) Integer status) {
+        List<Task> tasks;
+        if(status != null) {
+            tasks = taskService.getTasksByUserId(userId, status);
+        } else {
+            tasks = taskService.getTasksByUserId(userId);
+        }
+        List<TaskDto> tasksData = new ArrayList<>();
+        for (Task task: tasks) {
+            tasksData.add(convertToDto(task));
+        }
+        return tasksData;
+    }
 
     private TaskDto convertToDto(Task task) {
         TaskDto taskDto = modelMapper.map(task, TaskDto.class);
@@ -95,6 +111,7 @@ public class TaskController {
             //TODO Error
             throw new Exception("Parent does not exist!");
         }
+
         return true;
     }
 
