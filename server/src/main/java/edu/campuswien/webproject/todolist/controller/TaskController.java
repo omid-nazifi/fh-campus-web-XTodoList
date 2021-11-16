@@ -112,6 +112,15 @@ public class TaskController {
             throw new Exception("Parent does not exist!");
         }
 
+        if(Status.getById(taskDto.getStatus()) == Status.Unknown) {
+            //TODO Error
+            throw new Exception("Status is incorrect!");
+        }
+
+        if(Priority.getById(taskDto.getPriority()) == Priority.Unknown) {
+            //TODO Error
+            throw new Exception("Priority is incorrect!");
+        }
         return true;
     }
 
