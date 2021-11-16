@@ -1,5 +1,7 @@
 package edu.campuswien.webproject.todolist.model;
 
+import edu.campuswien.webproject.todolist.service.Priority;
+import edu.campuswien.webproject.todolist.service.Status;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,21 +22,26 @@ public class Task {
     private Long parentId;
 
     @Column(nullable = false)
+    private Long userId;
+
+    @Column(nullable = false)
     private String title;
 
     @Column
     private String description;
 
-    @Column(nullable = false)
-    private int status;
+    @Enumerated
+    @Column(nullable = false, columnDefinition = "smallint")
+    private Status status;
 
     private LocalDateTime creationDate;
 
     @Column
     private LocalDateTime deadline;
 
-    @Column(nullable = false)
-    private int priority;
+    @Enumerated
+    @Column(nullable = false, columnDefinition = "smallint")
+    private Priority priority;
 
     @Column
     private String color;

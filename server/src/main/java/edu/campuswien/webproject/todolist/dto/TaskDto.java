@@ -1,5 +1,7 @@
 package edu.campuswien.webproject.todolist.dto;
 
+import edu.campuswien.webproject.todolist.service.Priority;
+import edu.campuswien.webproject.todolist.service.Status;
 import edu.campuswien.webproject.todolist.validation.OnCreate;
 import edu.campuswien.webproject.todolist.validation.OnUpdate;
 import lombok.Data;
@@ -17,17 +19,20 @@ public class TaskDto {
 
     private Long parentId;
 
+    @NotNull(message = "User is required!")
+    private Long userId;
+
     @NotNull(message = "Title is required!")
     private String title;
 
     private String description;
 
     @NotNull(message = "Status is required!")
-    private int status;
+    private Status status;
 
     private LocalDateTime creationDate;
     private LocalDateTime deadline;
-    private int priority;
+    private Priority priority;
     private String color;
     private String tags;
 }

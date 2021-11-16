@@ -2,7 +2,10 @@ package edu.campuswien.webproject.todolist.controller;
 
 import edu.campuswien.webproject.todolist.dto.TaskDto;
 import edu.campuswien.webproject.todolist.model.Task;
+import edu.campuswien.webproject.todolist.service.Priority;
+import edu.campuswien.webproject.todolist.service.Status;
 import edu.campuswien.webproject.todolist.service.TaskService;
+import edu.campuswien.webproject.todolist.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -19,21 +22,21 @@ import java.util.Optional;
 public class TaskController {
 
     private final TaskService taskService;
+    private final UserService userService;
     private ModelMapper modelMapper;
 
     @Autowired
-    public TaskController(TaskService taskService, ModelMapper modelMapper) {
+    public TaskController(TaskService taskService, UserService userService, ModelMapper modelMapper) {
         this.taskService = taskService;
+        this.userService = userService;
         this.modelMapper = modelMapper;
     }
 
     @CrossOrigin(origins="*")
     @PostMapping(path = "/add")
     public TaskDto add(@Valid @RequestBody TaskDto taskDto) throws Exception {
-        if(taskDto.getParentId() != null && taskService.getTaskById(taskDto.getParentId()) == null) {
-            //TODO Error
-            throw new Exception("Parent Id is not exist!");
-        }
+        validateTask(taskDto, false);
+
         Task task = convertToEntity(taskDto);
         task = taskService.createTask(task);
         return convertToDto(task);
@@ -42,14 +45,8 @@ public class TaskController {
     @CrossOrigin(origins="*")
     @PutMapping(path = "/update")
     public TaskDto update(@Valid @RequestBody TaskDto taskDto) throws Exception {
-        if(taskService.getTaskById(taskDto.getId()) == null) {
-            //TODO Error
-            throw new Exception("This task is not exist!");
-        }
-        if(taskDto.getParentId() != null && taskService.getTaskById(taskDto.getParentId()) == null) {
-            //TODO Error
-            throw new Exception("Parent Id is not exist!");
-        }
+        validateTask(taskDto, true);
+
         Task task = convertToEntity(taskDto);
         task = taskService.updateTask(task);
         return convertToDto(task);
@@ -67,7 +64,7 @@ public class TaskController {
 
     @CrossOrigin(origins="*")
     @GetMapping(path = "/parent/{parentId}")
-    public List<TaskDto> List(@PathVariable long parentId) {
+    public List<TaskDto> getAllOfParent(@PathVariable long parentId) {
         List<Task> tasks = taskService.getTasksByParentId(parentId);
         List<TaskDto> tasksData = new ArrayList<>();
         for (Task task: tasks) {
@@ -76,7 +73,21 @@ public class TaskController {
         return tasksData;
     }
 
-
+    @CrossOrigin(origins="*")
+    @GetMapping(path = {"/user/{userId}", "/user/{userId}/{status}"})
+    public List<TaskDto> getAllOfUser(@PathVariable long userId, @PathVariable(required = false) Integer status) {
+        List<Task> tasks;
+        if(status != null) {
+            tasks = taskService.getTasksByUserId(userId, status);
+        } else {
+            tasks = taskService.getTasksByUserId(userId);
+        }
+        List<TaskDto> tasksData = new ArrayList<>();
+        for (Task task: tasks) {
+            tasksData.add(convertToDto(task));
+        }
+        return tasksData;
+    }
 
     private TaskDto convertToDto(Task task) {
         TaskDto taskDto = modelMapper.map(task, TaskDto.class);
@@ -85,6 +96,23 @@ public class TaskController {
 
     private Task convertToEntity(TaskDto taskDto) {
         return modelMapper.map(taskDto, Task.class);
+    }
+
+    private boolean validateTask(TaskDto taskDto, boolean isUpdate) throws Exception {
+        if(taskService.getTaskById(taskDto.getId()).isEmpty()) {
+            //TODO Error
+            throw new Exception("This task does not exist!");
+        }
+        if(taskDto.getUserId() != null && userService.getUserById(taskDto.getUserId()).isEmpty()) {
+            //TODO Error
+            throw new Exception("User does not exist!");
+        }
+        if(taskDto.getParentId() != null && taskService.getTaskById(taskDto.getParentId()).isEmpty()) {
+            //TODO Error
+            throw new Exception("Parent does not exist!");
+        }
+
+        return true;
     }
 
 }

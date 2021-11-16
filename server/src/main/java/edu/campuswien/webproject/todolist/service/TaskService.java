@@ -39,4 +39,12 @@ public class TaskService {
     public List<Task> getTasksByParentId(long parentId) {
         return taskRepository.findByParentId(parentId);
     }
+
+    public List<Task> getTasksByUserId(long userId) {
+        return taskRepository.findByUserIdOrderByPriorityAsc(userId);
+    }
+
+    public List<Task> getTasksByUserId(long userId, int status) {
+        return taskRepository.findByUserIdAndStatusOrderByPriorityAsc(userId, status);
+    }
 }
