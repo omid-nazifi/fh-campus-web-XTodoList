@@ -1,11 +1,10 @@
 package edu.campuswien.webproject.todolist.service;
 
 public enum Status {
-    Todo(1, "To do"),
-    InProgress(2, "In Progress"),
-    Suspended(3, "Suspended"),
-    Done(4, "Done"),
-    Unknown(0, "Unknown");
+    TODO(1, "To do"),
+    IN_PROGRESS(2, "In Progress"),
+    SUSPENDED(3, "Suspended"),
+    DONE(4, "Done");
 
     private int id;
     private String name;
@@ -19,6 +18,6 @@ public enum Status {
         for(Status e : values()) {
             if(e.id == id) return e;
         }
-        return Status.Unknown;
+        throw new IllegalArgumentException("The id does not exist in the Status");
     }
 }

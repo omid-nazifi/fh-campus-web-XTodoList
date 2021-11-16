@@ -1,10 +1,9 @@
 package edu.campuswien.webproject.todolist.service;
 
 public enum Priority {
-    High(1, "High"),
-    Normal(2, "Medium"),
-    Low(3, "Low"),
-    Unknown(0, "Unknown");
+    HIGH(1, "High"),
+    NORMAL(2, "Medium"),
+    LOW(3, "Low");
 
     private int id;
     private String name;
@@ -14,10 +13,11 @@ public enum Priority {
         this.name = name;
     }
 
-    public static Priority getById(int id) {
+    public static Priority getById(int id) throws IllegalArgumentException {
         for(Priority e : values()) {
-            if(e.id == id) return e;
+            if(e.id == id)
+                return e;
         }
-        return Priority.Unknown;
+        throw new IllegalArgumentException("The id does not exist in the Priority");
     }
 }

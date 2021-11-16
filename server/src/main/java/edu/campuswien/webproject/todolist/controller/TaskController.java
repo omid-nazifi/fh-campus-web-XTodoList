@@ -99,28 +99,19 @@ public class TaskController {
     }
 
     private boolean validateTask(TaskDto taskDto, boolean isUpdate) throws Exception {
-        if(taskService.getTaskById(taskDto.getId()) == null) {
+        if(taskService.getTaskById(taskDto.getId()).isEmpty()) {
             //TODO Error
             throw new Exception("This task does not exist!");
         }
-        if(taskDto.getUserId() != null && userService.getUserById(taskDto.getUserId()) == null) {
+        if(taskDto.getUserId() != null && userService.getUserById(taskDto.getUserId()).isEmpty()) {
             //TODO Error
             throw new Exception("User does not exist!");
         }
-        if(taskDto.getParentId() != null && taskService.getTaskById(taskDto.getParentId()) == null) {
+        if(taskDto.getParentId() != null && taskService.getTaskById(taskDto.getParentId()).isEmpty()) {
             //TODO Error
             throw new Exception("Parent does not exist!");
         }
 
-        if(Status.getById(taskDto.getStatus()) == Status.Unknown) {
-            //TODO Error
-            throw new Exception("Status is incorrect!");
-        }
-
-        if(Priority.getById(taskDto.getPriority()) == Priority.Unknown) {
-            //TODO Error
-            throw new Exception("Priority is incorrect!");
-        }
         return true;
     }
 
