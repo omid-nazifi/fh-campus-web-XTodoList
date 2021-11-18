@@ -3,10 +3,15 @@ package edu.campuswien.webproject.todolist.controller;
 import edu.campuswien.webproject.todolist.dto.LoginDto;
 import edu.campuswien.webproject.todolist.dto.NewPasswordDto;
 import edu.campuswien.webproject.todolist.dto.UserDto;
+import edu.campuswien.webproject.todolist.exception.ErrorModel;
+import edu.campuswien.webproject.todolist.exception.InputValidationException;
+import edu.campuswien.webproject.todolist.exception.SubErrorModel;
+import edu.campuswien.webproject.todolist.exception.ValidationError;
 import edu.campuswien.webproject.todolist.model.User;
 import edu.campuswien.webproject.todolist.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -35,10 +40,8 @@ public class UserController {
     @CrossOrigin(origins="*")
     @PostMapping(value = "/register")
     public UserDto register(@Valid @RequestBody UserDto userDto) throws Exception {
-        if(userService.isUserAvailable(userDto.getUsername())) {
-            //TODO Error
-            throw new Exception("There is an account with that email address:" + userDto.getUsername());
-        }
+        validateUser(userDto, false);
+
         User user = convertToEntity(userDto);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User newUser = userService.createUser(user);
@@ -48,10 +51,8 @@ public class UserController {
     @CrossOrigin(origins="*")
     @PutMapping(value = "/update")
     public UserDto update(@Valid @RequestBody UserDto userDto) throws Exception {
-        if(!userService.isUserAvailable(userDto.getUsername())) {
-            //TODO Error is not exist
-            throw new Exception("There is not any account with this email address:" + userDto.getUsername());
-        }
+        validateUser(userDto, true);
+
         User user = convertToEntity(userDto);
         User editedUser = userService.updateUser(user);
         return convertToDto(editedUser);
@@ -59,11 +60,7 @@ public class UserController {
 
     @CrossOrigin(origins="*")
     @PostMapping({"/login"})
-    public UserDto login(@Valid @RequestBody LoginDto loginData) {
-        if(loginData.getUsername() == null && loginData.getPassword() == null) {
-            //TODO Error
-            return null;
-        }
+    public UserDto login(@Valid @RequestBody LoginDto loginData) throws Exception {
         Optional<User> authUser = userService.authenticate(loginData);
         if(authUser.isPresent()) {
             UserDto userDto = convertToDto(authUser.get());
@@ -83,17 +80,9 @@ public class UserController {
     }
 
     @PutMapping(value = "/changePassword")
-    public Boolean changePassword(@Valid @RequestBody NewPasswordDto passwordDto) {
+    public Boolean changePassword(@Valid @RequestBody NewPasswordDto passwordDto) throws Exception {
         Optional<User> user = userService.getUserById(passwordDto.getUserId());
-        if(!user.isPresent()) {
-            //TODO Error
-        }
-        if(!passwordDto.getNewPassword().equals(passwordDto.getRepeatedNewPassword())) {
-            //TODO Error
-        }
-        if(!userService.checkIfValidOldPassword(user.get(), passwordDto.getOldPassword())) {
-            //TODO Error
-        }
+        validatePassword(passwordDto, user);
 
         return userService.changePassword(user.get(), passwordDto.getNewPassword());
     }
@@ -114,6 +103,46 @@ public class UserController {
             }
         }
         return modelMapper.map(userDto, User.class);
+    }
+
+    private boolean validateUser(UserDto userDto, boolean isUpdate) throws InputValidationException {
+        List<SubErrorModel> errors = new ArrayList<>();
+        if(!isUpdate && userService.isUserAvailable(userDto.getUsername())) {
+            errors.add(new ValidationError("username", "There is an account with that email address:" + userDto.getUsername()));
+        }
+
+        if(isUpdate && !userService.isUserAvailable(userDto.getUsername())) {
+            errors.add(new ValidationError("username", "This email address doesn't exist!"));
+        }
+
+        if(!errors.isEmpty()) {
+            ErrorModel errorModel = new ErrorModel(HttpStatus.BAD_REQUEST, "Validation errors");
+            errorModel.setSubErrors(errors);
+            throw new InputValidationException(errorModel, "Validation error in the UserController.validateUser()!");
+        }
+
+        return true;
+    }
+
+    private boolean validatePassword(NewPasswordDto passwordDto, Optional<User> user) throws InputValidationException {
+        List<SubErrorModel> errors = new ArrayList<>();
+        if(!user.isPresent()) {
+            errors.add(new ValidationError("UserId", "User does not exist!"));
+        }
+        if(!passwordDto.getNewPassword().equals(passwordDto.getRepeatedNewPassword())) {
+            errors.add(new ValidationError("NewPassword", "The new password does not matched with repeated one!"));
+        }
+        if(!userService.checkIfValidOldPassword(user.get(), passwordDto.getOldPassword())) {
+            errors.add(new ValidationError("oldPassword", "Old password is incorrect!"));
+        }
+
+        if(!errors.isEmpty()) {
+            ErrorModel errorModel = new ErrorModel(HttpStatus.BAD_REQUEST, "Change Password Errors");
+            errorModel.setSubErrors(errors);
+            throw new InputValidationException(errorModel, "Validation error in the UserController.validatePassword()!");
+        }
+
+        return true;
     }
 
 }
