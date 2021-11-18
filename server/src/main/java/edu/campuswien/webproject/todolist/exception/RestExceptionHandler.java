@@ -1,4 +1,4 @@
-package edu.campuswien.webproject.todolist.errorhandling;
+package edu.campuswien.webproject.todolist.exception;
 
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.http.HttpStatus;
@@ -15,15 +15,19 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
 @ControllerAdvice
-class ErrorHandlingControllerAdvice {
+class RestExceptionHandler  {
+
+    private ResponseEntity<Object> buildResponseEntity(ErrorModel error) {
+        return new ResponseEntity<>(error, error.getStatus());
+    }
 
     @ExceptionHandler(value = ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    ValidationErrorResponse onConstraintValidationException(ConstraintViolationException e) {
-        ValidationErrorResponse error = new ValidationErrorResponse();
+    ErrorModel onConstraintValidationException(ConstraintViolationException e) {
+        ErrorModel error = new ErrorModel(HttpStatus.BAD_REQUEST, "Validation errors", e);
         for (ConstraintViolation violation : e.getConstraintViolations()) {
-            error.getErrorMessage().add(new ErrorModel(violation.getPropertyPath().toString(), violation.getMessage()));
+            error.getSubErrors().add(new ValidationError(violation.getPropertyPath().toString(), violation.getMessage()));
         }
         return error;
     }
@@ -31,24 +35,31 @@ class ErrorHandlingControllerAdvice {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    ValidationErrorResponse onMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        ValidationErrorResponse error = new ValidationErrorResponse();
+    ErrorModel onMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        ErrorModel error = new ErrorModel(HttpStatus.BAD_REQUEST, "Validation errors", e);
         for (FieldError fieldError : e.getBindingResult().getFieldErrors()) {
-            error.getErrorMessage().add(new ErrorModel(fieldError.getField(), fieldError.getDefaultMessage()));
+            error.getSubErrors().add(new ValidationError(fieldError.getField(), fieldError.getDefaultMessage()));
         }
         return error;
+    }
+
+    @ExceptionHandler(InputValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    ErrorModel onInputValidationException(InputValidationException e) {
+        return e.getErrorModel();
     }
 
     @ExceptionHandler({ConversionFailedException.class, HttpMessageNotReadableException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ResponseEntity<String> handleConflict(RuntimeException ex) {
+    public ResponseEntity<Object> handleHttpMessageNotReadable(Exception ex) {
         String msg = ex.getMessage();
         if(msg.contains("; nested exception is")) {
             String splitMsg[] = msg.split(";");
             msg = splitMsg[0];
         }
-        return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
+        return buildResponseEntity(new ErrorModel(HttpStatus.BAD_REQUEST, msg, ex));
     }
 
 }
