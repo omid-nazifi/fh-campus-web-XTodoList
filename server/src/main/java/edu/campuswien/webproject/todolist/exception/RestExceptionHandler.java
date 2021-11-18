@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import javax.security.auth.message.AuthException;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
@@ -60,6 +61,13 @@ class RestExceptionHandler  {
             msg = splitMsg[0];
         }
         return buildResponseEntity(new ErrorModel(HttpStatus.BAD_REQUEST, msg, ex));
+    }
+
+    @ExceptionHandler({AuthException.class})
+    @ResponseStatus(HttpStatus.NETWORK_AUTHENTICATION_REQUIRED)
+    @ResponseBody
+    public ResponseEntity<Object> handleAuthException(AuthException ex) {
+        return buildResponseEntity(new ErrorModel(HttpStatus.NETWORK_AUTHENTICATION_REQUIRED, ex.getLocalizedMessage(), ex));
     }
 
 }

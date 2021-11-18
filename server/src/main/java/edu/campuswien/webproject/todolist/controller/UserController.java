@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.security.auth.message.AuthException;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,13 +61,14 @@ public class UserController {
 
     @CrossOrigin(origins="*")
     @PostMapping({"/login"})
-    public UserDto login(@Valid @RequestBody LoginDto loginData) throws Exception {
+    public UserDto login(@Valid @RequestBody LoginDto loginData) throws AuthException {
         Optional<User> authUser = userService.authenticate(loginData);
         if(authUser.isPresent()) {
             UserDto userDto = convertToDto(authUser.get());
             return userDto;
         }
-        return null;
+
+        throw new AuthException("Username or password are not valid!");
     }
 
     @GetMapping(value = "/all")
