@@ -1,7 +1,6 @@
 package edu.campuswien.webproject.todolist.service;
 
 import edu.campuswien.webproject.todolist.dto.LoginDto;
-import edu.campuswien.webproject.todolist.dto.UserDto;
 import edu.campuswien.webproject.todolist.model.User;
 import edu.campuswien.webproject.todolist.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

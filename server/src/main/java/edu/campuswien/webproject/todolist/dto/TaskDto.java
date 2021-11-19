@@ -16,22 +16,21 @@ public class TaskDto {
     @Null(groups = OnCreate.class)
     @NotNull(groups = OnUpdate.class, message = "id is required!")
     private Long id;
-
     private Long parentId;
 
-    @NotNull(message = "User is required!")
+    @NotNull(groups = {OnCreate.class, OnUpdate.class})
     private Long userId;
 
-    @NotNull(message = "Title is required!")
+    @NotNull(groups = {OnCreate.class, OnUpdate.class})
     private String title;
-
     private String description;
 
-    @NotNull(message = "Status is required!")
+    @NotNull(groups = {OnCreate.class, OnUpdate.class})
     private Status status;
-
     private LocalDateTime creationDate;
     private LocalDateTime deadline;
+
+    @NotNull(groups = {OnCreate.class, OnUpdate.class})
     private Priority priority;
     private String color;
     private String tags;

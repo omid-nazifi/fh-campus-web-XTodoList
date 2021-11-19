@@ -44,7 +44,7 @@ public class TaskService {
         return taskRepository.findByUserIdOrderByPriorityAsc(userId);
     }
 
-    public List<Task> getTasksByUserId(long userId, int status) {
+    public List<Task> getTasksByUserId(long userId, Status status) {
         return taskRepository.findByUserIdAndStatusOrderByPriorityAsc(userId, status);
     }
 }

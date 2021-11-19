@@ -1,17 +1,22 @@
 package edu.campuswien.webproject.todolist.controller;
 
 import edu.campuswien.webproject.todolist.dto.TaskDto;
+import edu.campuswien.webproject.todolist.exception.ErrorModel;
+import edu.campuswien.webproject.todolist.exception.InputValidationException;
+import edu.campuswien.webproject.todolist.exception.SubErrorModel;
+import edu.campuswien.webproject.todolist.exception.ValidationError;
 import edu.campuswien.webproject.todolist.model.Task;
-import edu.campuswien.webproject.todolist.service.Priority;
 import edu.campuswien.webproject.todolist.service.Status;
 import edu.campuswien.webproject.todolist.service.TaskService;
 import edu.campuswien.webproject.todolist.service.UserService;
+import edu.campuswien.webproject.todolist.validation.OnCreate;
+import edu.campuswien.webproject.todolist.validation.OnUpdate;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -34,7 +39,7 @@ public class TaskController {
 
     @CrossOrigin(origins="*")
     @PostMapping(path = "/add")
-    public TaskDto add(@Valid @RequestBody TaskDto taskDto) throws Exception {
+    public TaskDto add(@Validated(OnCreate.class) @RequestBody TaskDto taskDto) throws Exception {
         validateTask(taskDto, false);
 
         Task task = convertToEntity(taskDto);
@@ -44,7 +49,7 @@ public class TaskController {
 
     @CrossOrigin(origins="*")
     @PutMapping(path = "/update")
-    public TaskDto update(@Valid @RequestBody TaskDto taskDto) throws Exception {
+    public TaskDto update(@Validated(OnUpdate.class) @RequestBody TaskDto taskDto) throws Exception {
         validateTask(taskDto, true);
 
         Task task = convertToEntity(taskDto);
@@ -59,7 +64,7 @@ public class TaskController {
         if(task.isPresent()) {
             return convertToDto(task.get());
         }
-        return null; //TODO error
+        return new TaskDto(); //not exist
     }
 
     @CrossOrigin(origins="*")
@@ -75,13 +80,19 @@ public class TaskController {
 
     @CrossOrigin(origins="*")
     @GetMapping(path = {"/user/{userId}", "/user/{userId}/{status}"})
-    public List<TaskDto> getAllOfUser(@PathVariable long userId, @PathVariable(required = false) Integer status) {
+    public List<TaskDto> getAllOfUser(@PathVariable long userId, @PathVariable(required = false) String status) throws Exception {
         List<Task> tasks;
         if(status != null) {
-            tasks = taskService.getTasksByUserId(userId, status);
+            try {
+                tasks = taskService.getTasksByUserId(userId, Status.valueOf(status));
+            } catch (IllegalArgumentException e) {
+                ErrorModel errorModel = new ErrorModel(HttpStatus.BAD_REQUEST, "Status is wrong!", e);
+                throw new InputValidationException(errorModel, e.getMessage());
+            }
         } else {
             tasks = taskService.getTasksByUserId(userId);
         }
+
         List<TaskDto> tasksData = new ArrayList<>();
         for (Task task: tasks) {
             tasksData.add(convertToDto(task));
@@ -98,18 +109,22 @@ public class TaskController {
         return modelMapper.map(taskDto, Task.class);
     }
 
-    private boolean validateTask(TaskDto taskDto, boolean isUpdate) throws Exception {
-        if(taskService.getTaskById(taskDto.getId()).isEmpty()) {
-            //TODO Error
-            throw new Exception("This task does not exist!");
+    private boolean validateTask(TaskDto taskDto, boolean isUpdate) throws InputValidationException {
+        List<SubErrorModel> errors = new ArrayList<>();
+        if(isUpdate && taskService.getTaskById(taskDto.getId()).isEmpty()) {
+            errors.add(new ValidationError("Id", "This task does not exist!"));
         }
         if(taskDto.getUserId() != null && userService.getUserById(taskDto.getUserId()).isEmpty()) {
-            //TODO Error
-            throw new Exception("User does not exist!");
+            errors.add(new ValidationError("UserId", "User does not exist!"));
         }
         if(taskDto.getParentId() != null && taskService.getTaskById(taskDto.getParentId()).isEmpty()) {
-            //TODO Error
-            throw new Exception("Parent does not exist!");
+            errors.add(new ValidationError("ParentId", "Parent does not exist!"));
+        }
+
+        if(!errors.isEmpty()) {
+            ErrorModel errorModel = new ErrorModel(HttpStatus.BAD_REQUEST, "Validation errors");
+            errorModel.setSubErrors(errors);
+            throw new InputValidationException(errorModel, "Validation error in the TaskController.validateTask()!");
         }
 
         return true;

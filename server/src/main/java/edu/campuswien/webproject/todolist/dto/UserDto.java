@@ -19,20 +19,20 @@ import java.io.Serializable;
 public class UserDto implements Serializable {
 
     @Null(groups = OnCreate.class)
-    @NotNull(groups = OnUpdate.class, message = "id is required!")
+    @NotNull(groups = OnUpdate.class)
     private Long id;
 
-    @NotNull(message = "Name is required!")
+    @NotNull(groups = {OnCreate.class, OnUpdate.class})
     private String name;
 
-    @NotNull
-    @NotEmpty
-    @Email(message = "Email is not valid!")
+    @NotNull(groups = {OnCreate.class, OnUpdate.class})
+    @NotEmpty(groups = {OnCreate.class, OnUpdate.class})
+    @Email(groups = {OnCreate.class, OnUpdate.class}, message = "Email is not valid!")
     private String username; //email
 
     @Getter(onMethod = @__( @JsonIgnore ))
     @Setter(onMethod = @__( @JsonProperty))
-    @ValidPassword(groups = OnCreate.class, message = "Password is required!")
+    @ValidPassword(groups = OnCreate.class)
     @Null(groups = OnUpdate.class)
     private String password;
 }
