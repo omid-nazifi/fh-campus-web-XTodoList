@@ -18,21 +18,20 @@ public class NewPasswordDto implements Serializable {
 
     @Getter(onMethod = @__( @JsonIgnore))
     @Setter(onMethod = @__( @JsonProperty))
-    @ValidPassword(message = "Old password is required!")
     @NotNull
     @NotEmpty
     private String oldPassword;
 
     @Getter(onMethod = @__( @JsonIgnore ))
     @Setter(onMethod = @__( @JsonProperty))
-    @ValidPassword(message = "New password is required!")
+    @ValidPassword
     @NotNull
     @NotEmpty
     private String newPassword;
 
     @Getter(onMethod = @__( @JsonIgnore ))
     @Setter(onMethod = @__( @JsonProperty))
-    @ValidPassword(message = "Confirm password is required!")
+    @ValidPassword
     @NotNull
     @NotEmpty
     private String repeatedNewPassword;
