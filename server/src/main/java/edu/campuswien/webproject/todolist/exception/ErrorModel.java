@@ -1,9 +1,13 @@
 package edu.campuswien.webproject.todolist.exception;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import edu.campuswien.webproject.todolist.config.ConfigProperties;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -13,6 +17,7 @@ import java.util.List;
  * This class describe the error object model, which is a simple POJO that contains the rejected filedName and a messageError.
  */
 @Data
+@Component
 public class ErrorModel{
     private HttpStatus status;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
@@ -20,9 +25,6 @@ public class ErrorModel{
     private String message;
     private String debugMessage;
     private List<SubErrorModel> subErrors;
-
-    @Value("${application.config.debug.mode: false}")
-    private boolean debugMode;
 
     private ErrorModel() {
         timestamp = LocalDateTime.now();
@@ -38,9 +40,10 @@ public class ErrorModel{
         this();
         this.status = status;
         this.message = "Unexpected error";
-        if(debugMode) {
+        //TODO check it later
+        /*if(configProperties.isDebugMode()) {
             this.debugMessage = ex.getLocalizedMessage();
-        }
+        }*/
     }
 
     public ErrorModel(HttpStatus status, String message) {
@@ -53,8 +56,9 @@ public class ErrorModel{
         this();
         this.status = status;
         this.message = message;
-        if(debugMode) {
+        //TODO check it later
+        /*if(configProperties.isDebugMode()) {
             this.debugMessage = ex.getLocalizedMessage();
-        }
+        }*/
     }
 }

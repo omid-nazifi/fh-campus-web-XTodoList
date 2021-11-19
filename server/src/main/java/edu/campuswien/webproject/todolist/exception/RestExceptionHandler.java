@@ -1,5 +1,7 @@
 package edu.campuswien.webproject.todolist.exception;
 
+import edu.campuswien.webproject.todolist.config.ConfigProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,9 @@ import javax.validation.ConstraintViolationException;
 
 @ControllerAdvice
 class RestExceptionHandler  {
+
+    @Autowired
+    private ConfigProperties configProperties;
 
     private ResponseEntity<Object> buildResponseEntity(ErrorModel error) {
         return new ResponseEntity<>(error, error.getStatus());
@@ -68,6 +73,16 @@ class RestExceptionHandler  {
     @ResponseBody
     public ResponseEntity<Object> handleAuthException(AuthException ex) {
         return buildResponseEntity(new ErrorModel(HttpStatus.NETWORK_AUTHENTICATION_REQUIRED, ex.getLocalizedMessage(), ex));
+    }
+
+    @ExceptionHandler({RuntimeException.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseBody
+    public ResponseEntity<Object> handleRuntimeException(RuntimeException ex) {
+        if(configProperties.isDebugMode()) {
+            ex.printStackTrace();
+        }
+        return buildResponseEntity(new ErrorModel(HttpStatus.INTERNAL_SERVER_ERROR, "Oops, something went wrong!", ex));
     }
 
 }
