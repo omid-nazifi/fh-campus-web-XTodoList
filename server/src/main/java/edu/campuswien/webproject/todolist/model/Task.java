@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -52,4 +53,9 @@ public class Task {
 
     @Column
     private String tags;
+
+    @OneToMany(mappedBy = "taskId", targetEntity = Comment.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    //@JoinColumn(name = "taskId")
+    @OrderBy("creationTime")
+    private List<Comment> comments;
 }
