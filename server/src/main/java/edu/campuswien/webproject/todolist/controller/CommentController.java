@@ -5,7 +5,7 @@ import edu.campuswien.webproject.todolist.exception.*;
 import edu.campuswien.webproject.todolist.model.Comment;
 import edu.campuswien.webproject.todolist.model.History;
 import edu.campuswien.webproject.todolist.service.CommentService;
-import edu.campuswien.webproject.todolist.service.HistoryEnum;
+import edu.campuswien.webproject.todolist.model.HistoryEnum;
 import edu.campuswien.webproject.todolist.service.HistoryService;
 import edu.campuswien.webproject.todolist.service.TaskService;
 import edu.campuswien.webproject.todolist.validation.OnCreate;

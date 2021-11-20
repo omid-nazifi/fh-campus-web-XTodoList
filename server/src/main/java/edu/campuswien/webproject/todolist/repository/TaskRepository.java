@@ -1,7 +1,7 @@
 package edu.campuswien.webproject.todolist.repository;
 
 import edu.campuswien.webproject.todolist.model.Task;
-import edu.campuswien.webproject.todolist.service.Status;
+import edu.campuswien.webproject.todolist.model.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

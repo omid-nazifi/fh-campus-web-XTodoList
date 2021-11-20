@@ -1,5 +1,6 @@
 package edu.campuswien.webproject.todolist.service;
 
+import edu.campuswien.webproject.todolist.model.Status;
 import edu.campuswien.webproject.todolist.model.Task;
 import edu.campuswien.webproject.todolist.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;

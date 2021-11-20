@@ -6,6 +6,8 @@ import edu.campuswien.webproject.todolist.exception.InputValidationException;
 import edu.campuswien.webproject.todolist.exception.SubErrorModel;
 import edu.campuswien.webproject.todolist.exception.ValidationError;
 import edu.campuswien.webproject.todolist.model.History;
+import edu.campuswien.webproject.todolist.model.HistoryEnum;
+import edu.campuswien.webproject.todolist.model.Status;
 import edu.campuswien.webproject.todolist.model.Task;
 import edu.campuswien.webproject.todolist.service.*;
 import edu.campuswien.webproject.todolist.validation.OnCreate;

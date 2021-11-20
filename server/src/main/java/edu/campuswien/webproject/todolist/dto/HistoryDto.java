@@ -1,6 +1,6 @@
 package edu.campuswien.webproject.todolist.dto;
 
-import edu.campuswien.webproject.todolist.service.HistoryEnum;
+import edu.campuswien.webproject.todolist.model.HistoryEnum;
 import edu.campuswien.webproject.todolist.validation.OnCreate;
 import edu.campuswien.webproject.todolist.validation.OnUpdate;
 import lombok.Data;
