@@ -34,7 +34,11 @@ public class Task {
     @Column(nullable = false, columnDefinition = "smallint")
     private Status status;
 
-    private LocalDateTime creationDate;
+    @Column
+    private LocalDateTime creationTime;
+
+    @Column
+    private LocalDateTime modifiedTime;
 
     @Column
     private LocalDateTime deadline;

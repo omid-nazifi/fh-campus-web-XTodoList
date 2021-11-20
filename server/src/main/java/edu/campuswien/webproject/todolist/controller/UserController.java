@@ -3,10 +3,7 @@ package edu.campuswien.webproject.todolist.controller;
 import edu.campuswien.webproject.todolist.dto.LoginDto;
 import edu.campuswien.webproject.todolist.dto.NewPasswordDto;
 import edu.campuswien.webproject.todolist.dto.UserDto;
-import edu.campuswien.webproject.todolist.exception.ErrorModel;
-import edu.campuswien.webproject.todolist.exception.InputValidationException;
-import edu.campuswien.webproject.todolist.exception.SubErrorModel;
-import edu.campuswien.webproject.todolist.exception.ValidationError;
+import edu.campuswien.webproject.todolist.exception.*;
 import edu.campuswien.webproject.todolist.model.User;
 import edu.campuswien.webproject.todolist.service.UserService;
 import edu.campuswien.webproject.todolist.validation.OnCreate;
@@ -26,12 +23,11 @@ import java.util.Optional;
 
 @RestController
 @Validated
-@RequestMapping(value = "user")
 public class UserController {
 
     private final UserService userService;
-    private PasswordEncoder passwordEncoder;
-    private ModelMapper modelMapper;
+    private final PasswordEncoder passwordEncoder;
+    private final ModelMapper modelMapper;
 
     @Autowired
     public UserController(UserService userService, PasswordEncoder passwordEncoder, ModelMapper modelMapper) {
@@ -41,7 +37,7 @@ public class UserController {
     }
 
     @CrossOrigin(origins="*")
-    @PostMapping(value = "/register")
+    @PostMapping(value = "/users")
     public UserDto register(@Validated(OnCreate.class) @RequestBody UserDto userDto) throws Exception {
         userDto.setId(null);
         validateUser(userDto, false);
@@ -53,7 +49,7 @@ public class UserController {
     }
 
     @CrossOrigin(origins="*")
-    @PutMapping(value = "/update")
+    @PutMapping(value = "/users")
 
     public UserDto update(@Validated(OnUpdate.class) @RequestBody UserDto userDto) throws Exception {
         userDto.setPassword(null);
@@ -69,15 +65,14 @@ public class UserController {
     public UserDto login(@Valid @RequestBody LoginDto loginData) throws AuthException {
         Optional<User> authUser = userService.authenticate(loginData);
         if(authUser.isPresent()) {
-            UserDto userDto = convertToDto(authUser.get());
-            return userDto;
+            return convertToDto(authUser.get());
         }
 
         throw new AuthException("Username or password are not valid!");
     }
 
-    @GetMapping(value = "/all")
-    public List<UserDto> list() {
+    @GetMapping(value = "/users")
+    public List<UserDto> getAllUser() {
         List<User> users = userService.getAllUsers();
         List<UserDto> usersData = new ArrayList<>();
         for (User user : users) {
@@ -86,7 +81,17 @@ public class UserController {
         return usersData;
     }
 
-    @PutMapping(value = "/changePassword")
+    @GetMapping(value = "/users/{id}")
+    public UserDto getUser(@PathVariable long id) throws Exception {
+        Optional<User> optUser = userService.getUserById(id);
+        if(optUser.isPresent()) {
+            return convertToDto(optUser.get());
+        }
+        throw new NotFoundDataException(new ErrorModel(HttpStatus.NOT_FOUND, "There isn't a user with this Id!"),
+                "Not found error in UserController.getUser()!");
+    }
+
+    @PutMapping(value = "/users/changePassword")
     public Boolean changePassword(@Valid @RequestBody NewPasswordDto passwordDto) throws Exception {
         Optional<User> user = userService.getUserById(passwordDto.getUserId());
         validatePassword(passwordDto, user);
@@ -95,8 +100,7 @@ public class UserController {
     }
 
     private UserDto convertToDto(User user) {
-        UserDto userDto = modelMapper.map(user, UserDto.class);
-        return userDto;
+        return modelMapper.map(user, UserDto.class);
     }
 
     private User convertToEntity(UserDto userDto) {
@@ -112,7 +116,7 @@ public class UserController {
         return modelMapper.map(userDto, User.class);
     }
 
-    private boolean validateUser(UserDto userDto, boolean isUpdate) throws InputValidationException {
+    private void validateUser(UserDto userDto, boolean isUpdate) throws InputValidationException {
         List<SubErrorModel> errors = new ArrayList<>();
         if(isUpdate && userService.getUserById(userDto.getId()).isEmpty()) {
             errors.add(new ValidationError("Id", "Id is not valid!"));
@@ -131,11 +135,9 @@ public class UserController {
             errorModel.setSubErrors(errors);
             throw new InputValidationException(errorModel, "Validation error in the UserController.validateUser()!");
         }
-
-        return true;
     }
 
-    private boolean validatePassword(NewPasswordDto passwordDto, Optional<User> user) throws InputValidationException {
+    private void validatePassword(NewPasswordDto passwordDto, Optional<User> user) throws InputValidationException {
         List<SubErrorModel> errors = new ArrayList<>();
         if(user.isEmpty()) {
             errors.add(new ValidationError("UserId", "User does not exist!"));
@@ -152,8 +154,6 @@ public class UserController {
             errorModel.setSubErrors(errors);
             throw new InputValidationException(errorModel, "Validation error in the UserController.validatePassword()!");
         }
-
-        return true;
     }
 
 }
