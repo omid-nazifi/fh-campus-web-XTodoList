@@ -24,12 +24,11 @@ import java.util.Optional;
 
 @RestController
 @Validated
-@RequestMapping(path = "task")
 public class TaskController {
 
     private final TaskService taskService;
     private final UserService userService;
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     @Autowired
     public TaskController(TaskService taskService, UserService userService, ModelMapper modelMapper) {
@@ -39,8 +38,8 @@ public class TaskController {
     }
 
     @CrossOrigin(origins="*")
-    @PostMapping(path = "/add")
-    public TaskDto add(@Validated(OnCreate.class) @RequestBody TaskDto taskDto) throws Exception {
+    @PostMapping(path = "/tasks")
+    public TaskDto createTask(@Validated(OnCreate.class) @RequestBody TaskDto taskDto) throws Exception {
         validateTask(taskDto, false);
 
         Task task = convertToEntity(taskDto);
@@ -49,8 +48,8 @@ public class TaskController {
     }
 
     @CrossOrigin(origins="*")
-    @PutMapping(path = "/update")
-    public TaskDto update(@Validated(OnUpdate.class) @RequestBody TaskDto taskDto) throws Exception {
+    @PutMapping(path = "/tasks")
+    public TaskDto updateTask(@Validated(OnUpdate.class) @RequestBody TaskDto taskDto) throws Exception {
         validateTask(taskDto, true);
 
         Task task = convertToEntity(taskDto);
@@ -59,7 +58,7 @@ public class TaskController {
     }
 
     @CrossOrigin(origins="*")
-    @GetMapping(path = "/{id}")
+    @GetMapping(path = "/tasks/{id}")
     public TaskDto getTask(@PathVariable long id) {
         Optional<Task> task = taskService.getTaskById(id);
         if(task.isPresent()) {
@@ -69,8 +68,8 @@ public class TaskController {
     }
 
     @CrossOrigin(origins="*")
-    @GetMapping(path = "/parent/{parentId}")
-    public List<TaskDto> getAllOfParent(@PathVariable long parentId) {
+    @GetMapping(path = "/tasks/parent/{parentId}")
+    public List<TaskDto> getTasksOfParent(@PathVariable long parentId) {
         List<Task> tasks = taskService.getTasksByParentId(parentId);
         List<TaskDto> tasksData = new ArrayList<>();
         for (Task task: tasks) {
@@ -80,8 +79,8 @@ public class TaskController {
     }
 
     @CrossOrigin(origins="*")
-    @GetMapping(path = {"/user/{userId}", "/user/{userId}/{status}"})
-    public List<TaskDto> getAllOfUser(@PathVariable long userId, @PathVariable(required = false) String status) throws Exception {
+    @GetMapping(path = {"/tasks/user/{userId}", "/tasks/user/{userId}/status/{status}"})
+    public List<TaskDto> getTasksOfUser(@PathVariable long userId, @PathVariable(required = false) String status) throws Exception {
         List<Task> tasks;
         if(status != null) {
             try {
@@ -101,9 +100,19 @@ public class TaskController {
         return tasksData;
     }
 
+    /*TODO archive a task
+    @CrossOrigin(origins="*")
+    @DeleteMapping(path = "/tasks/{id}")
+    public Boolean deleteTask(@PathVariable long id) {
+        Optional<Task> task = taskService.getTaskById(id);
+        if(task.isPresent()) {
+            return convertToDto(task.get());
+        }
+        return new TaskDto(); //not exist
+    }*/
+
     private TaskDto convertToDto(Task task) {
-        TaskDto taskDto = modelMapper.map(task, TaskDto.class);
-        return taskDto;
+        return modelMapper.map(task, TaskDto.class);
     }
 
     private Task convertToEntity(TaskDto taskDto) {
@@ -124,7 +133,7 @@ public class TaskController {
         return mappedTask;
     }
 
-    private boolean validateTask(TaskDto taskDto, boolean isUpdate) throws InputValidationException {
+    private void validateTask(TaskDto taskDto, boolean isUpdate) throws InputValidationException {
         List<SubErrorModel> errors = new ArrayList<>();
         if(isUpdate && taskService.getTaskById(taskDto.getId()).isEmpty()) {
             errors.add(new ValidationError("Id", "This task does not exist!"));
@@ -141,8 +150,6 @@ public class TaskController {
             errorModel.setSubErrors(errors);
             throw new InputValidationException(errorModel, "Validation error in the TaskController.validateTask()!");
         }
-
-        return true;
     }
 
 }

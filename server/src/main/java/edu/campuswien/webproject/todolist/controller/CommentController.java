@@ -20,12 +20,11 @@ import java.util.Optional;
 
 @RestController
 @Validated
-@RequestMapping(path = "comment")
 public class CommentController {
 
-    private CommentService commentService;
-    private TaskService taskService;
-    private ModelMapper modelMapper;
+    private final CommentService commentService;
+    private final TaskService taskService;
+    private final ModelMapper modelMapper;
 
     @Autowired
     public CommentController(CommentService commentService, TaskService taskService, ModelMapper modelMapper) {
@@ -35,8 +34,8 @@ public class CommentController {
     }
 
     @CrossOrigin(origins="*")
-    @PostMapping(path = "/add")
-    public CommentDto add(@Validated(OnCreate.class) @RequestBody CommentDto commentDto) throws Exception {
+    @PostMapping(path = "/comments")
+    public CommentDto addComment(@Validated(OnCreate.class) @RequestBody CommentDto commentDto) throws Exception {
         validateComment(commentDto, false);
 
         Comment comment = convertToEntity(commentDto);
@@ -45,8 +44,8 @@ public class CommentController {
     }
 
     @CrossOrigin(origins="*")
-    @PutMapping(path = "/edit")
-    public CommentDto edit(@Validated(OnUpdate.class) @RequestBody CommentDto commentDto) throws Exception {
+    @PutMapping(path = "/comments")
+    public CommentDto editComment(@Validated(OnUpdate.class) @RequestBody CommentDto commentDto) throws Exception {
         validateComment(commentDto, true);
 
         Comment comment = convertToEntity(commentDto);
@@ -55,8 +54,8 @@ public class CommentController {
     }
 
     @CrossOrigin(origins="*")
-    @DeleteMapping(path = "/delete/{id}")
-    public Boolean delete(@PathVariable long id) throws Exception {
+    @DeleteMapping(path = "/comments/{id}")
+    public Boolean deleteComment(@PathVariable long id) throws Exception {
         Optional<Comment> comment = commentService.getCommentById(id);
         if(comment.isEmpty()) {
             throw new NotFoundDataException(new ErrorModel(HttpStatus.NOT_FOUND, "There is not a comment with this Id!"),
@@ -66,8 +65,8 @@ public class CommentController {
     }
 
     @CrossOrigin(origins="*")
-    @GetMapping(path = "/list/task/{taskId}")
-    public List<CommentDto> getAllForTask(@PathVariable long taskId) {
+    @GetMapping(path = "/comments/task/{taskId}")
+    public List<CommentDto> getCommentsOfTask(@PathVariable long taskId) {
         List<Comment> comments = commentService.getCommentsByTaskId(taskId);
         List<CommentDto> commentsData = new ArrayList<>();
         for (Comment comment : comments) {
@@ -77,8 +76,7 @@ public class CommentController {
     }
 
     private CommentDto convertToDto(Comment comment) {
-        CommentDto commentDto = modelMapper.map(comment, CommentDto.class);
-        return commentDto;
+        return modelMapper.map(comment, CommentDto.class);
     }
 
     private Comment convertToEntity(CommentDto commentDto) {
@@ -99,7 +97,7 @@ public class CommentController {
         return mappedComment;
     }
 
-    private boolean validateComment(CommentDto commentDto, boolean isUpdate) throws InputValidationException {
+    private void validateComment(CommentDto commentDto, boolean isUpdate) throws InputValidationException {
         List<SubErrorModel> errors = new ArrayList<>();
         if(isUpdate && commentService.getCommentById(commentDto.getId()).isEmpty()) {
             errors.add(new ValidationError("Id", "This comment does not exist!"));
@@ -113,7 +111,5 @@ public class CommentController {
             errorModel.setSubErrors(errors);
             throw new InputValidationException(errorModel, "Validation error in the CommentController.validateComment()!");
         }
-
-        return true;
     }
 }
