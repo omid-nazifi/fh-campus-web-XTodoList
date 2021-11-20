@@ -1,6 +1,5 @@
 package edu.campuswien.webproject.todolist.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +9,6 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -24,5 +22,5 @@ public class Comment {
     private String text;
 
     @Column(nullable = false)
-    private LocalDateTime creationDate;
+    private LocalDateTime creationTime;
 }

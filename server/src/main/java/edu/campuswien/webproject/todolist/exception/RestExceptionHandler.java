@@ -85,4 +85,11 @@ class RestExceptionHandler  {
         return buildResponseEntity(new ErrorModel(HttpStatus.INTERNAL_SERVER_ERROR, "Oops, something went wrong!", ex));
     }
 
+    @ExceptionHandler(NotFoundDataException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    ErrorModel onNotFoundDataException(NotFoundDataException e) {
+        return e.getErrorModel();
+    }
+
 }
