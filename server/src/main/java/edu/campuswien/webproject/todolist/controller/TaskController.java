@@ -5,10 +5,9 @@ import edu.campuswien.webproject.todolist.exception.ErrorModel;
 import edu.campuswien.webproject.todolist.exception.InputValidationException;
 import edu.campuswien.webproject.todolist.exception.SubErrorModel;
 import edu.campuswien.webproject.todolist.exception.ValidationError;
+import edu.campuswien.webproject.todolist.model.History;
 import edu.campuswien.webproject.todolist.model.Task;
-import edu.campuswien.webproject.todolist.service.Status;
-import edu.campuswien.webproject.todolist.service.TaskService;
-import edu.campuswien.webproject.todolist.service.UserService;
+import edu.campuswien.webproject.todolist.service.*;
 import edu.campuswien.webproject.todolist.validation.OnCreate;
 import edu.campuswien.webproject.todolist.validation.OnUpdate;
 import org.modelmapper.ModelMapper;
@@ -28,12 +27,15 @@ public class TaskController {
 
     private final TaskService taskService;
     private final UserService userService;
+    private final HistoryService historyService;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public TaskController(TaskService taskService, UserService userService, ModelMapper modelMapper) {
+    public TaskController(TaskService taskService, UserService userService,
+                          HistoryService historyService, ModelMapper modelMapper) {
         this.taskService = taskService;
         this.userService = userService;
+        this.historyService = historyService;
         this.modelMapper = modelMapper;
     }
 
@@ -42,8 +44,11 @@ public class TaskController {
     public TaskDto createTask(@Validated(OnCreate.class) @RequestBody TaskDto taskDto) throws Exception {
         validateTask(taskDto, false);
 
-        Task task = convertToEntity(taskDto);
+        Task task = convertToEntity(taskDto, Optional.empty());
         task = taskService.createTask(task);
+
+        historyService.create(History.builder(task.getId(), HistoryEnum.CREATE_TASK));
+
         return convertToDto(task);
     }
 
@@ -51,9 +56,20 @@ public class TaskController {
     @PutMapping(path = "/tasks")
     public TaskDto updateTask(@Validated(OnUpdate.class) @RequestBody TaskDto taskDto) throws Exception {
         validateTask(taskDto, true);
+        Optional<Task> optTask = taskService.getTaskById(taskDto.getId());
+        Task task = convertToEntity(taskDto, optTask);
 
-        Task task = convertToEntity(taskDto);
+        boolean isStatusChanged = false;
+        if(optTask.get().getStatus() != task.getStatus()) {
+            isStatusChanged = true;
+        }
+
         task = taskService.updateTask(task);
+        historyService.create(History.builder(task.getId(), HistoryEnum.UPDATE_TASK));
+        if(isStatusChanged) {
+            historyService.create(History.builder(task.getId(), task.getStatus()));
+        }
+
         return convertToDto(task);
     }
 
@@ -115,14 +131,11 @@ public class TaskController {
         return modelMapper.map(task, TaskDto.class);
     }
 
-    private Task convertToEntity(TaskDto taskDto) {
+    private Task convertToEntity(TaskDto taskDto, Optional<Task> optTask) {
         Task mappedTask = modelMapper.map(taskDto, Task.class);
-        if (taskDto.getId() != null && taskDto.getId() != 0) { //in the Update
-            Optional<Task> optTask = taskService.getTaskById(taskDto.getId());
-            if(optTask.isPresent()) {
-                Task oldTask = optTask.get();
-                mappedTask.setCreationTime(oldTask.getCreationTime());
-            }
+        if(optTask.isPresent()) {//Update
+            Task oldTask = optTask.get();
+            mappedTask.setCreationTime(oldTask.getCreationTime());
         }
         if(mappedTask.getCreationTime() == null) {
             mappedTask.setCreationTime(LocalDateTime.now());

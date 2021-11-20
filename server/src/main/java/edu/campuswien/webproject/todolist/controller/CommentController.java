@@ -3,7 +3,10 @@ package edu.campuswien.webproject.todolist.controller;
 import edu.campuswien.webproject.todolist.dto.CommentDto;
 import edu.campuswien.webproject.todolist.exception.*;
 import edu.campuswien.webproject.todolist.model.Comment;
+import edu.campuswien.webproject.todolist.model.History;
 import edu.campuswien.webproject.todolist.service.CommentService;
+import edu.campuswien.webproject.todolist.service.HistoryEnum;
+import edu.campuswien.webproject.todolist.service.HistoryService;
 import edu.campuswien.webproject.todolist.service.TaskService;
 import edu.campuswien.webproject.todolist.validation.OnCreate;
 import edu.campuswien.webproject.todolist.validation.OnUpdate;
@@ -24,12 +27,15 @@ public class CommentController {
 
     private final CommentService commentService;
     private final TaskService taskService;
+    private final HistoryService historyService;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public CommentController(CommentService commentService, TaskService taskService, ModelMapper modelMapper) {
+    public CommentController(CommentService commentService, TaskService taskService,
+                             HistoryService historyService, ModelMapper modelMapper) {
         this.commentService = commentService;
         this.taskService = taskService;
+        this.historyService = historyService;
         this.modelMapper = modelMapper;
     }
 
@@ -40,6 +46,9 @@ public class CommentController {
 
         Comment comment = convertToEntity(commentDto);
         comment = commentService.create(comment);
+
+        historyService.create(History.builder(comment.getTaskId(), HistoryEnum.ADD_COMMENT));
+
         return convertToDto(comment);
     }
 
@@ -50,6 +59,9 @@ public class CommentController {
 
         Comment comment = convertToEntity(commentDto);
         comment = commentService.update(comment);
+
+        historyService.create(History.builder(comment.getTaskId(), HistoryEnum.EDIT_COMMENT));
+
         return convertToDto(comment);
     }
 
@@ -61,7 +73,11 @@ public class CommentController {
             throw new NotFoundDataException(new ErrorModel(HttpStatus.NOT_FOUND, "There is not a comment with this Id!"),
                     "Not found error in CommentController.delete()!");
         }
-        return commentService.delete(comment.get());
+        boolean isDeleted = commentService.delete(comment.get());
+
+        historyService.create(History.builder(comment.get().getTaskId(), HistoryEnum.DELETE_COMMENT));
+
+        return isDeleted;
     }
 
     @CrossOrigin(origins="*")
