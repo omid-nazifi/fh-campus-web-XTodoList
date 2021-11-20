@@ -1,4 +1,4 @@
-package edu.campuswien.webproject.todolist.service;
+package edu.campuswien.webproject.todolist.model;
 
 public enum Status {
     TODO(1, "To do"),

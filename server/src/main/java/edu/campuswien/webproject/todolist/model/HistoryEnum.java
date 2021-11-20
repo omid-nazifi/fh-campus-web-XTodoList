@@ -1,4 +1,4 @@
-package edu.campuswien.webproject.todolist.service;
+package edu.campuswien.webproject.todolist.model;
 
 public enum HistoryEnum {
     CREATE_TASK(1, "The task is created"),
