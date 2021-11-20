@@ -66,8 +66,8 @@ public class CommentController {
     }
 
     @CrossOrigin(origins="*")
-    @GetMapping(path = "/task/{taskId}")
-    public List<CommentDto> getAllOfTask(@PathVariable long taskId) {
+    @GetMapping(path = "/list/task/{taskId}")
+    public List<CommentDto> getAllForTask(@PathVariable long taskId) {
         List<Comment> comments = commentService.getCommentsByTaskId(taskId);
         List<CommentDto> commentsData = new ArrayList<>();
         for (Comment comment : comments) {
@@ -82,11 +82,21 @@ public class CommentController {
     }
 
     private Comment convertToEntity(CommentDto commentDto) {
-        Comment comment = modelMapper.map(commentDto, Comment.class);
-        if(commentDto.getCreationTime() != null) {
-            comment.setCreationTime(LocalDateTime.now());
+        Comment mappedComment = modelMapper.map(commentDto, Comment.class);
+        if (commentDto.getId() != null && commentDto.getId() != 0) { //in the Update
+            Optional<Comment> optComment = commentService.getCommentById(commentDto.getId());
+            if(optComment.isPresent()) {
+                Comment oldComment = optComment.get();
+                mappedComment.setCreationTime(oldComment.getCreationTime());
+            }
         }
-        return comment;
+        if(mappedComment.getCreationTime() == null) {
+            mappedComment.setCreationTime(LocalDateTime.now());
+        }
+        if(mappedComment.getModifiedTime() == null) {
+            mappedComment.setModifiedTime(LocalDateTime.now());
+        }
+        return mappedComment;
     }
 
     private boolean validateComment(CommentDto commentDto, boolean isUpdate) throws InputValidationException {

@@ -27,7 +27,8 @@ public class TaskDto {
 
     @NotNull(groups = {OnCreate.class, OnUpdate.class})
     private Status status;
-    private LocalDateTime creationDate;
+    private LocalDateTime creationTime;
+    private LocalDateTime modifiedTime;
     private LocalDateTime deadline;
 
     @NotNull(groups = {OnCreate.class, OnUpdate.class})

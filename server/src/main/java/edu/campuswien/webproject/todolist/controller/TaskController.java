@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -106,7 +107,21 @@ public class TaskController {
     }
 
     private Task convertToEntity(TaskDto taskDto) {
-        return modelMapper.map(taskDto, Task.class);
+        Task mappedTask = modelMapper.map(taskDto, Task.class);
+        if (taskDto.getId() != null && taskDto.getId() != 0) { //in the Update
+            Optional<Task> optTask = taskService.getTaskById(taskDto.getId());
+            if(optTask.isPresent()) {
+                Task oldTask = optTask.get();
+                mappedTask.setCreationTime(oldTask.getCreationTime());
+            }
+        }
+        if(mappedTask.getCreationTime() == null) {
+            mappedTask.setCreationTime(LocalDateTime.now());
+        }
+        if(mappedTask.getModifiedTime() == null) {
+            mappedTask.setModifiedTime(LocalDateTime.now());
+        }
+        return mappedTask;
     }
 
     private boolean validateTask(TaskDto taskDto, boolean isUpdate) throws InputValidationException {

@@ -23,4 +23,7 @@ public class Comment {
 
     @Column(nullable = false)
     private LocalDateTime creationTime;
+
+    @Column(nullable = false)
+    private LocalDateTime modifiedTime;
 }

@@ -22,4 +22,5 @@ public class CommentDto {
     @NotEmpty(groups = {OnCreate.class, OnUpdate.class})
     private String text;
     private LocalDateTime creationTime;
+    private LocalDateTime modifiedTime;
 }
