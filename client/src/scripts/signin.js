@@ -6,6 +6,46 @@ import { Link } from 'react-router-dom';
 import { Button, FloatingLabel, Form } from 'react-bootstrap';
 
 class SignIn extends Component {
+
+    constructor() {
+        super();
+        this.state = {
+            Email: '',
+            Password: ''
+        }
+        this.Password = this.Password.bind(this);
+        this.Email = this.Email.bind(this);
+        this.login = this.login.bind(this);
+    }
+    Email(event) {
+        this.setState({ Email: event.target.value })
+    }
+    Password(event) {
+        this.setState({ Password: event.target.value })
+    }
+    login(event) {
+        fetch('http://localhost:8080/login', {
+            method: 'post',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: this.state.Email,
+                password: this.state.Password
+            })
+        }).then((Response) => Response.json())
+            .then((result) => {
+                console.log(result);
+                if (result.status != null)
+                    alert('Invalid credentials!');
+                else {
+                    alert('Successful login');
+                    this.props.history.push("/");
+                }
+            })
+    }
+
     render() {
         return (
             <section>
@@ -22,9 +62,9 @@ class SignIn extends Component {
                                     label="Email address"
                                     className="mb-3"
                                 >
-                                    <Form.Control type="email" placeholder="name@example.com" />
+                                    <Form.Control type="email" onChange={this.Email} placeholder="name@example.com" />
                                 </FloatingLabel>
-                                <FloatingLabel controlId="floatingPassword" label="Password">
+                                <FloatingLabel controlId="floatingPassword" onChange={this.Password} label="Password">
                                     <Form.Control type="password" placeholder="Password" />
                                 </FloatingLabel>
                                 <div class="d-flex justify-content-between align-items-center">
@@ -32,7 +72,7 @@ class SignIn extends Component {
                                     <div class="form-check mb-0">
                                         <Form.Check
                                             inline
-                                            label="Remmeber me"
+                                            label="Remember me"
                                             name="group1"
                                             type="checkbox"
                                             id={`inline-checkbox-1`}
@@ -41,7 +81,7 @@ class SignIn extends Component {
                                     <a href="#!" class="text-body">Forgot password?</a>
                                 </div>
                                 <div class="text-center text-lg-start mt-4 pt-2">
-                                    <Button variant="primary" type="submit">
+                                    <Button variant="primary" onClick = {this.login}>
                                         Login
                                     </Button>
                                     <p class="small fw-bold mt-2 pt-1 mb-0">Don't have an account?
