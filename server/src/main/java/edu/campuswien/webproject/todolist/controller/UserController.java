@@ -82,6 +82,13 @@ public class UserController {
     }
 
     @CrossOrigin(origins="*")
+    @GetMapping({"/users/logout"})
+    public Boolean logout() {
+        //SecurityContextHolder.clearContext();
+        return true;
+    }
+
+    @CrossOrigin(origins="*")
     @GetMapping(value = "/users")
     public List<UserDto> getAllUser() {
         List<User> users = userService.getAllUsers();
