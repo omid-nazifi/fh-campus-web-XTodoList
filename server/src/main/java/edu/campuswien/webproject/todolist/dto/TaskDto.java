@@ -44,5 +44,5 @@ public class TaskDto {
 
     @Getter(onMethod = @__( @JsonProperty))
     @Setter(onMethod = @__( @JsonIgnore))
-    private List<Comment> comments;
+    private List<CommentDto> comments;
 }
