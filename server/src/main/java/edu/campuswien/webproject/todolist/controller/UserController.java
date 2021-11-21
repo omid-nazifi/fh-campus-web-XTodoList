@@ -1,5 +1,6 @@
 package edu.campuswien.webproject.todolist.controller;
 
+import edu.campuswien.webproject.todolist.config.WebSecurityConfig;
 import edu.campuswien.webproject.todolist.dto.LoginDto;
 import edu.campuswien.webproject.todolist.dto.NewPasswordDto;
 import edu.campuswien.webproject.todolist.dto.UserDto;
@@ -8,18 +9,24 @@ import edu.campuswien.webproject.todolist.model.User;
 import edu.campuswien.webproject.todolist.service.UserService;
 import edu.campuswien.webproject.todolist.validation.OnCreate;
 import edu.campuswien.webproject.todolist.validation.OnUpdate;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.security.auth.message.AuthException;
+import javax.crypto.spec.SecretKeySpec;
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import javax.xml.bind.DatatypeConverter;
+import java.security.Key;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @Validated
@@ -62,15 +69,19 @@ public class UserController {
 
     @CrossOrigin(origins="*")
     @PostMapping({"/login"})
-    public UserDto login(@Valid @RequestBody LoginDto loginData) throws AuthException {
+    public UserDto login(@Valid @RequestBody LoginDto loginData) throws AuthenticationException {
         Optional<User> authUser = userService.authenticate(loginData);
-        if(authUser.isPresent()) {
-            return convertToDto(authUser.get());
+        if(authUser.isEmpty()) {
+            throw new AuthenticationExceptionImpl("Username or password are not valid!");
         }
 
-        throw new AuthException("Username or password are not valid!");
+        String token = getJWTToken(authUser.get().getUsername());
+        UserDto userDto = convertToDto(authUser.get());
+        userDto.setToken(token);
+        return userDto;
     }
 
+    @CrossOrigin(origins="*")
     @GetMapping(value = "/users")
     public List<UserDto> getAllUser() {
         List<User> users = userService.getAllUsers();
@@ -81,6 +92,7 @@ public class UserController {
         return usersData;
     }
 
+    @CrossOrigin(origins="*")
     @GetMapping(value = "/users/{id}")
     public UserDto getUser(@PathVariable long id) throws Exception {
         Optional<User> optUser = userService.getUserById(id);
@@ -91,6 +103,7 @@ public class UserController {
                 "Not found error in UserController.getUser()!");
     }
 
+    @CrossOrigin(origins="*")
     @PutMapping(value = "/users/changePassword")
     public Boolean changePassword(@Valid @RequestBody NewPasswordDto passwordDto) throws Exception {
         Optional<User> user = userService.getUserById(passwordDto.getUserId());
@@ -154,6 +167,27 @@ public class UserController {
             errorModel.setSubErrors(errors);
             throw new InputValidationException(errorModel, "Validation error in the UserController.validatePassword()!");
         }
+    }
+
+    private String getJWTToken(String username) {
+        List<GrantedAuthority> grantedAuthorities = AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER");
+
+        SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+        byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(WebSecurityConfig.JWT_SECRET_KEY);
+        Key signingKey = new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
+
+        String token = Jwts
+                .builder()
+                .setId(UUID.randomUUID().toString())
+                .setSubject(username)
+                .claim(WebSecurityConfig.JWT_CLAIM,grantedAuthorities.stream()
+                                .map(GrantedAuthority::getAuthority)
+                                .collect(Collectors.toList()))
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + WebSecurityConfig.JWT_TOKEN_EXPIRATION))
+                .signWith(signatureAlgorithm, signingKey).compact();
+
+        return WebSecurityConfig.JWT_TOKEN_PREFIX + token;
     }
 
 }
