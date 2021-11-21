@@ -6,8 +6,10 @@ import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -68,11 +70,11 @@ class RestExceptionHandler  {
         return buildResponseEntity(new ErrorModel(HttpStatus.BAD_REQUEST, msg, ex));
     }
 
-    @ExceptionHandler({AuthException.class})
+    @ExceptionHandler({AuthException.class, AuthenticationException.class})
     @ResponseStatus(HttpStatus.NETWORK_AUTHENTICATION_REQUIRED)
     @ResponseBody
-    public ResponseEntity<Object> handleAuthException(AuthException ex) {
-        return buildResponseEntity(new ErrorModel(HttpStatus.NETWORK_AUTHENTICATION_REQUIRED, ex.getLocalizedMessage(), ex));
+    public ResponseEntity<Object> handleAuthException(Exception ex) {
+        return buildResponseEntity(new ErrorModel(HttpStatus.UNAUTHORIZED, ex.getLocalizedMessage(), ex));
     }
 
     @ExceptionHandler({RuntimeException.class})
@@ -83,6 +85,16 @@ class RestExceptionHandler  {
             ex.printStackTrace();
         }
         return buildResponseEntity(new ErrorModel(HttpStatus.INTERNAL_SERVER_ERROR, "Oops, something went wrong!", ex));
+    }
+
+    @ExceptionHandler({MissingRequestHeaderException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ResponseEntity<Object> handleMissingRequestHeaderException(MissingRequestHeaderException ex) {
+        if(configProperties.isDebugMode()) {
+            ex.printStackTrace();
+        }
+        return buildResponseEntity(new ErrorModel(HttpStatus.BAD_REQUEST, ex.getMessage(), ex));
     }
 
     @ExceptionHandler(NotFoundDataException.class)
