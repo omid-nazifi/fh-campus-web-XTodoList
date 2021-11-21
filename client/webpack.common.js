@@ -66,6 +66,16 @@ module.exports = {
           }
         ],
       },
+      // images
+      {
+        test: /\.(png|svg|jpg|gif)$/i,
+        use: {
+          loader: 'url-loader',
+          options: {
+            esModule: false,
+          },
+        },
+      }
     ]
   },
   resolve: {

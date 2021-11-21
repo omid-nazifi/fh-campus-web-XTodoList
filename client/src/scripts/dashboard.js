@@ -1,14 +1,28 @@
 import React, { Component } from 'react';
-import { BsMoonFill, BsSearch, BsSun } from 'react-icons/bs';
+import { BsMoonFill, BsSearch, BsSun, BsThreeDots } from 'react-icons/bs';
 import '../styles/dashboard.css';
 import Logo from '../img/logo512.png';
 import maleAvatar from '../img/avatar/avatar-illustrated-02.png';
-import femaleAvatar from '../img/avatar/avatar-illustrated-01.png';
 
-import NewTaskPopup from './new_task';
+import CreateTask from './createTask';
+import { DashboardPages, TaskStatus } from './enums';
 
 class Dashboard extends Component {
-    state = { menuShowing: true, darkMode: false , showNewTaskPopup: false};
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            userId: 1, // TODO should be dynamic
+            pageTitle: "Dashboard",
+            activePage: DashboardPages.BOARD,
+            menuShowing: true,
+            darkMode: false,
+            showNewTaskModal: false,
+            newTaskModalTitle: '',
+            taskList: []
+        }
+    }
 
     toggleMenu() {
         if (this.state.menuShowing)
@@ -27,8 +41,103 @@ class Dashboard extends Component {
         }
     }
 
+    handleShow = (page) => {
+        switch (page.page) {
+            case DashboardPages.CREATE_TASK:
+                this.setState({
+                    showNewTaskModal: true,
+                    newTaskModalTitle: 'Create new Task',
+                });
+                break;
+            case DashboardPages.TODO:
+                this.setState({
+                    pageTitle: 'List of tasks which are not yet started',
+                    activePage: DashboardPages.TODO,
+                });
+                break;
+            case DashboardPages.IN_PROGRESS:
+                this.setState({
+                    pageTitle: 'List of tasks which are in progess',
+                    activePage: DashboardPages.IN_PROGRESS,
+                });
+                break;
+            case DashboardPages.DONE:
+                this.setState({
+                    pageTitle: 'List of tasks which have already done',
+                    activePage: DashboardPages.DONE,
+                });
+                break;
+            case DashboardPages.SETTINGS:
+                this.setState({
+                    pageTitle: 'Settings',
+                    activePage: DashboardPages.SETTINGS,
+                });
+                break;
+            default:
+                this.setState({
+                    pageTitle: 'List of all tasks',
+                    activePage: DashboardPages.BOARD,
+                });
+                break;
+        }
+        this.loadTasks(page);
+    };
+
+    handleCreateTaskModalClose = (fromModal) => {
+        if (fromModal.msg) {
+            alert(fromModal.msg);// TODO if model was ok refresh list of tasks
+        }
+        this.setState({
+            showNewTaskModal: false
+        });
+    };
+
+    async loadTasks(page) {
+        let url = 'http://localhost:8080/tasks/user/' + this.state.userId;
+        switch (page.page) {
+            case DashboardPages.TODO:
+                url += '/status/' + TaskStatus.TODO;
+                break;
+            case DashboardPages.IN_PROGRESS:
+                url += '/status/' + TaskStatus.IN_PROGRESS;
+                break;
+            case DashboardPages.DONE:
+                url += '/status/' + TaskStatus.DONE;
+                break;
+            default:
+                break;
+        }
+
+        try {
+            const res = await fetch(url);
+
+            if (!res.ok) {
+                const message = `An error has occured: ${res.status} - ${res.statusText}`;
+                throw new Error(message);
+            }
+
+            const data = await res.json();
+
+            const result = {
+                status: res.status + "-" + res.statusText,
+                headers: {
+                    "Content-Type": res.headers.get("Content-Type"),
+                    "Content-Length": res.headers.get("Content-Length"),
+                },
+                length: res.headers.get("Content-Length"),
+                data: data,
+            };
+
+            console.log(result.data);
+            this.state.taskList = result.data;
+        } catch (err) {
+            console.log(err.message);
+        }
+    }
+
     render() {
-        const { menuShowing, darkMode, showNewTaskPopup } = this.state;
+        const { menuShowing, darkMode } = this.state;
+        //this.loadTasks();
         return (
             <div class="page-flex">
                 <aside class={this.toggleMenu()}>
@@ -37,7 +146,7 @@ class Dashboard extends Component {
                             <a href="/" class="logo-wrapper" title="Home">
                                 <span class="sr-only">Home</span>
                                 {/* <span class="icon logo" aria-hidden="true"></span> */}
-                                <img src={Logo} alt="Logo" class="icon logo" aria-hidden="true"/>
+                                <img src={Logo} alt="Logo" class="icon logo" aria-hidden="true" />
                                 <div class="logo-text">
                                     <span class="logo-title">XToDo</span>
                                     <span class="logo-subtitle">Dashboard</span>
@@ -52,123 +161,44 @@ class Dashboard extends Component {
                         <div class="sidebar-body">
                             <ul class="sidebar-body-menu">
                                 <li>
-                                    <a class="active" href="#" role="button" onClick={() => this.setState({ showNewTaskPopup: !showNewTaskPopup })}><span class="icon new_task" aria-hidden="true"></span>New Task</a>
-                                    <NewTaskPopup show={showNewTaskPopup} onHide={ () => this.setState({ showNewTaskPopup: !showNewTaskPopup })} />
+                                    <a href="#" role="button" onClick={() => this.handleShow({ page: DashboardPages.CREATE_TASK })}>
+                                        <span class="icon new_task" aria-hidden="true"></span>New Task
+                                    </a>
+                                    <CreateTask
+                                        show={this.state.showNewTaskModal}
+                                        title={this.state.newTaskModalTitle}
+                                        userId={this.state.userId}
+                                        onClick={this.handleCreateTaskModalClose}
+                                        onHide={this.handleCreateTaskModalClose} />
                                 </li>
                                 <li>
-                                    <a class="show-cat-btn" href="##">
-                                        <span class="icon document" aria-hidden="true"></span>Posts
-                                        <span class="category__btn transparent-btn" title="Open list">
-                                            <span class="sr-only">Open list</span>
-                                            <span class="icon arrow-down" aria-hidden="true"></span>
-                                        </span>
+                                    <a className={this.state.activePage === DashboardPages.BOARD ? "active" : ""} href="##"
+                                        onClick={() => this.handleShow({ page: DashboardPages.BOARD })}>
+                                        <span class="icon document" aria-hidden="true"></span>Board (all)
                                     </a>
-                                    <ul class="cat-sub-menu">
-                                        <li>
-                                            <a href="posts.html">All Posts</a>
-                                        </li>
-                                        <li>
-                                            <a href="new-post.html">Add new post</a>
-                                        </li>
-                                    </ul>
                                 </li>
                                 <li>
-                                    <a class="show-cat-btn" href="##">
-                                        <span class="icon folder" aria-hidden="true"></span>Categories
-                                        <span class="category__btn transparent-btn" title="Open list">
-                                            <span class="sr-only">Open list</span>
-                                            <span class="icon arrow-down" aria-hidden="true"></span>
-                                        </span>
+                                    <a className={this.state.activePage === DashboardPages.TODO ? "active" : ""} href="##">
+                                        <span class="icon task-todo" aria-hidden="true"></span>Todo Tasks
                                     </a>
-                                    <ul class="cat-sub-menu">
-                                        <li>
-                                            <a href="categories.html">All categories</a>
-                                        </li>
-                                    </ul>
                                 </li>
                                 <li>
-                                    <a class="show-cat-btn" href="##">
-                                        <span class="icon image" aria-hidden="true"></span>Media
-                                        <span class="category__btn transparent-btn" title="Open list">
-                                            <span class="sr-only">Open list</span>
-                                            <span class="icon arrow-down" aria-hidden="true"></span>
-                                        </span>
+                                    <a className={this.state.activePage === DashboardPages.IN_PROGRESS ? "active" : ""} href="##">
+                                        <span class="icon task-inprogress" aria-hidden="true"></span>In Progress Tasks
                                     </a>
-                                    <ul class="cat-sub-menu">
-                                        <li>
-                                            <a href="media-01.html">Media-01</a>
-                                        </li>
-                                        <li>
-                                            <a href="media-02.html">Media-02</a>
-                                        </li>
-                                    </ul>
                                 </li>
                                 <li>
-                                    <a class="show-cat-btn" href="##">
-                                        <span class="icon paper" aria-hidden="true"></span>Pages
-                                        <span class="category__btn transparent-btn" title="Open list">
-                                            <span class="sr-only">Open list</span>
-                                            <span class="icon arrow-down" aria-hidden="true"></span>
-                                        </span>
+                                    <a className={this.state.activePage === DashboardPages.DONE ? "active" : ""} href="##">
+                                        <span class="icon task-done" aria-hidden="true"></span>Done Tasks
                                     </a>
-                                    <ul class="cat-sub-menu">
-                                        <li>
-                                            <a href="pages.html">All pages</a>
-                                        </li>
-                                        <li>
-                                            <a href="new-page.html">Add new page</a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <a href="comments.html">
-                                        <span class="icon message" aria-hidden="true"></span>
-                                        Comments
-                                    </a>
-                                    <span class="msg-counter">7</span>
                                 </li>
                             </ul>
                             <span class="system-menu__title">system</span>
                             <ul class="sidebar-body-menu">
                                 <li>
-                                    <a href="appearance.html"><span class="icon edit" aria-hidden="true"></span>Appearance</a>
-                                </li>
-                                <li>
-                                    <a class="show-cat-btn" href="##">
-                                        <span class="icon category" aria-hidden="true"></span>Extentions
-                                        <span class="category__btn transparent-btn" title="Open list">
-                                            <span class="sr-only">Open list</span>
-                                            <span class="icon arrow-down" aria-hidden="true"></span>
-                                        </span>
+                                    <a className={this.state.activePage === DashboardPages.SETTINGS ? "active" : ""} href="##">
+                                        <span class="icon setting" aria-hidden="true"></span>Settings
                                     </a>
-                                    <ul class="cat-sub-menu">
-                                        <li>
-                                            <a href="extention-01.html">Extentions-01</a>
-                                        </li>
-                                        <li>
-                                            <a href="extention-02.html">Extentions-02</a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <a class="show-cat-btn" href="##">
-                                        <span class="icon user-3" aria-hidden="true"></span>Users
-                                        <span class="category__btn transparent-btn" title="Open list">
-                                            <span class="sr-only">Open list</span>
-                                            <span class="icon arrow-down" aria-hidden="true"></span>
-                                        </span>
-                                    </a>
-                                    <ul class="cat-sub-menu">
-                                        <li>
-                                            <a href="users-01.html">Users-01</a>
-                                        </li>
-                                        <li>
-                                            <a href="users-02.html">Users-02</a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <a href="##"><span class="icon setting" aria-hidden="true"></span>Settings</a>
                                 </li>
                             </ul>
                         </div>
@@ -179,7 +209,7 @@ class Dashboard extends Component {
                         <div class="container main-nav">
                             <div class="main-nav-start">
                                 <div class="search-wrapper">
-                                    <i aria-hidden="true"><BsSearch/></i>
+                                    <i aria-hidden="true"><BsSearch /></i>
                                     <input type="text" placeholder="Enter keywords ..." required />
                                 </div>
                             </div>
@@ -188,10 +218,10 @@ class Dashboard extends Component {
                                     <span class="sr-only">Toggle menu</span>
                                     <span class="icon menu-toggle--gray" aria-hidden="true"></span>
                                 </button>
-                                <button class="theme-switcher gray-circle-btn" type="button" title="Switch theme" onClick={() => {this.setState({ darkMode: !darkMode }); this.toggleTheme()}}>
+                                <button class="theme-switcher gray-circle-btn" type="button" title="Switch theme" onClick={() => { this.setState({ darkMode: !darkMode }); this.toggleTheme() }}>
                                     <span class="sr-only">Switch theme</span>
-                                    <i class="sun-icon" aria-hidden="true"><BsSun/></i>
-                                    <i class="moon-icon" aria-hidden="true"><BsMoonFill/></i>
+                                    <i class="sun-icon" aria-hidden="true"><BsSun /></i>
+                                    <i class="moon-icon" aria-hidden="true"><BsMoonFill /></i>
                                 </button>
                                 <div class="notification-wrapper">
                                     <button class="gray-circle-btn dropdown-btn" title="To messages" type="button">
@@ -265,81 +295,61 @@ class Dashboard extends Component {
                             </div>
                         </div>
                     </nav>
-                    <main class="main users chart-page" id="skip-target">
+                    <main class="main users" id="skip-target">
                         <div class="container">
-                            <h2 class="main-title">Dashboard</h2>
-                            <div class="row stat-cards">
-                                <div class="col-md-6 col-xl-3">
-                                    <article class="stat-cards-item">
-                                        <div class="stat-cards-icon primary">
-                                            <i data-feather="bar-chart-2" aria-hidden="true"></i>
-                                        </div>
-                                        <div class="stat-cards-info">
-                                            <p class="stat-cards-info__num">1478 286</p>
-                                            <p class="stat-cards-info__title">Total visits</p>
-                                            <p class="stat-cards-info__progress">
-                                                <span class="stat-cards-info__profit success">
-                                                    <i data-feather="trending-up" aria-hidden="true"></i>4.07%
-                                                </span>
-                                                Last month
-                                            </p>
-                                        </div>
-                                    </article>
-                                </div>
-                                <div class="col-md-6 col-xl-3">
-                                    <article class="stat-cards-item">
-                                        <div class="stat-cards-icon warning">
-                                            <i data-feather="file" aria-hidden="true"></i>
-                                        </div>
-                                        <div class="stat-cards-info">
-                                            <p class="stat-cards-info__num">1478 286</p>
-                                            <p class="stat-cards-info__title">Total visits</p>
-                                            <p class="stat-cards-info__progress">
-                                                <span class="stat-cards-info__profit success">
-                                                    <i data-feather="trending-up" aria-hidden="true"></i>0.24%
-                                                </span>
-                                                Last month
-                                            </p>
-                                        </div>
-                                    </article>
-                                </div>
-                                <div class="col-md-6 col-xl-3">
-                                    <article class="stat-cards-item">
-                                        <div class="stat-cards-icon purple">
-                                            <i data-feather="file" aria-hidden="true"></i>
-                                        </div>
-                                        <div class="stat-cards-info">
-                                            <p class="stat-cards-info__num">1478 286</p>
-                                            <p class="stat-cards-info__title">Total visits</p>
-                                            <p class="stat-cards-info__progress">
-                                                <span class="stat-cards-info__profit danger">
-                                                    <i data-feather="trending-down" aria-hidden="true"></i>1.64%
-                                                </span>
-                                                Last month
-                                            </p>
-                                        </div>
-                                    </article>
-                                </div>
-                                <div class="col-md-6 col-xl-3">
-                                    <article class="stat-cards-item">
-                                        <div class="stat-cards-icon success">
-                                            <i data-feather="feather" aria-hidden="true"></i>
-                                        </div>
-                                        <div class="stat-cards-info">
-                                            <p class="stat-cards-info__num">1478 286</p>
-                                            <p class="stat-cards-info__title">Total visits</p>
-                                            <p class="stat-cards-info__progress">
-                                                <span class="stat-cards-info__profit warning">
-                                                    <i data-feather="trending-up" aria-hidden="true"></i>0.00%
-                                                </span>
-                                                Last month
-                                            </p>
-                                        </div>
-                                    </article>
-                                </div>
-                            </div>
+                            <h2 class="main-title">{this.state.pageTitle}</h2>
                             <div class="row">
-                                
+                                <div class="col-lg-12">
+                                    <div class="users-table table-wrapper">
+                                        <table class="posts-table">
+                                            <thead>
+                                                <tr class="users-table-info">
+                                                    <th>
+                                                        Task ID
+                                                    </th>
+                                                    <th>Title</th>
+                                                    <th>Author</th>
+                                                    <th>Status</th>
+                                                    <th>Date</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {this.state.taskList.map((item, i) => {
+                                                    return [
+                                                        <tr>
+                                                            <td>
+                                                                1
+                                                            </td>
+                                                            <td>
+                                                                Starting your traveling blog with Vasco
+                                                            </td>
+                                                            <td>
+                                                                <div class="pages-table-img">
+                                                                    Jenny Wilson
+                                                                </div>
+                                                            </td>
+                                                            <td><span class="badge-pending">Pending</span></td>
+                                                            <td>17.04.2021</td>
+                                                            <td>
+                                                                <span class="p-relative">
+                                                                    <button class="dropdown-btn transparent-btn" type="button" title="More info">
+                                                                        <div class="sr-only">More info</div>
+                                                                        <i aria-hidden="true"><BsThreeDots /></i>
+                                                                    </button>
+                                                                    <ul class="users-item-dropdown dropdown">
+                                                                        <li><a href="##">Edit</a></li>
+                                                                        <li><a href="##">Trash</a></li>
+                                                                    </ul>
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    ];
+                                                })}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </main>

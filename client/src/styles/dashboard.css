@@ -1055,13 +1055,7 @@
  }
  
  .document {
-   background-image: url(../img/svg/Bulk/Document-white.svg);
-   width: 24px;
-   height: 24px;
- }
- 
- .folder {
-   background-image: url(../img/svg/Bulk/Folder-white.svg);
+   background-image: url(../img/svg/Bulk/Tick Square.svg);
    width: 24px;
    height: 24px;
  }
@@ -1077,11 +1071,23 @@
    width: 24px;
    height: 24px;
  }
+
+ .task-todo {
+  background-image: url(../img/svg/Bulk/Lock.svg);
+  width: 24px;
+  height: 24px;
+ }
+
+ .task-inprogress {
+  background-image: url(../img/svg/Bulk/TimeSquare.svg);
+  width: 24px;
+  height: 24px;
+ }
  
- .paper {
+ .task-done {
    width: 24px;
    height: 24px;
-   background-image: url(../img/svg/Bulk/Paper-white.svg);
+   background-image: url("../img/svg/Bulk/Tick Square.svg");
  }
  
  .message {
@@ -1138,23 +1144,11 @@
    width: 24px;
    height: 24px;
  }
- 
- .radio {
-   background-image: url(../img/svg/radio.svg);
-   width: 24px;
-   height: 24px;
- }
- 
+
  .thumbnail {
    background-image: url(../img/svg/thumbnail.svg);
    width: 60px;
    height: 60px;
- }
- 
- .time-circle {
-   background-image: url(../img/svg/Bulk/TimeCircle.svg);
-   width: 24px;
-   height: 24px;
  }
  
  .google-drive {
