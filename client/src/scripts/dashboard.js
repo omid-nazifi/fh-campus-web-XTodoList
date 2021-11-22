@@ -6,6 +6,7 @@ import maleAvatar from '../img/avatar/avatar-illustrated-02.png';
 
 import CreateTask from './createTask';
 import { DashboardPages, TaskStatus } from './enums';
+import { Table } from 'react-bootstrap';
 
 class Dashboard extends Component {
 
@@ -48,7 +49,7 @@ class Dashboard extends Component {
                     showNewTaskModal: true,
                     newTaskModalTitle: 'Create new Task',
                 });
-                break;
+                return;
             case DashboardPages.TODO:
                 this.setState({
                     pageTitle: 'List of tasks which are not yet started',
@@ -109,6 +110,7 @@ class Dashboard extends Component {
         }
 
         try {
+            console.log(url);
             const res = await fetch(url);
 
             if (!res.ok) {
@@ -137,7 +139,7 @@ class Dashboard extends Component {
 
     render() {
         const { menuShowing, darkMode } = this.state;
-        //this.loadTasks();
+        //this.handleShow({ page: DashboardPages.BOARD });
         return (
             <div class="page-flex">
                 <aside class={this.toggleMenu()}>
@@ -145,7 +147,6 @@ class Dashboard extends Component {
                         <div class="sidebar-head">
                             <a href="/" class="logo-wrapper" title="Home">
                                 <span class="sr-only">Home</span>
-                                {/* <span class="icon logo" aria-hidden="true"></span> */}
                                 <img src={Logo} alt="Logo" class="icon logo" aria-hidden="true" />
                                 <div class="logo-text">
                                     <span class="logo-title">XToDo</span>
@@ -161,7 +162,7 @@ class Dashboard extends Component {
                         <div class="sidebar-body">
                             <ul class="sidebar-body-menu">
                                 <li>
-                                    <a href="#" role="button" onClick={() => this.handleShow({ page: DashboardPages.CREATE_TASK })}>
+                                    <a href="##" role="button" onClick={() => this.handleShow({ page: DashboardPages.CREATE_TASK })}>
                                         <span class="icon new_task" aria-hidden="true"></span>New Task
                                     </a>
                                     <CreateTask
@@ -178,17 +179,20 @@ class Dashboard extends Component {
                                     </a>
                                 </li>
                                 <li>
-                                    <a className={this.state.activePage === DashboardPages.TODO ? "active" : ""} href="##">
+                                    <a className={this.state.activePage === DashboardPages.TODO ? "active" : ""} href="##"
+                                        onClick={() => this.handleShow({ page: DashboardPages.TODO })}>
                                         <span class="icon task-todo" aria-hidden="true"></span>Todo Tasks
                                     </a>
                                 </li>
                                 <li>
-                                    <a className={this.state.activePage === DashboardPages.IN_PROGRESS ? "active" : ""} href="##">
+                                    <a className={this.state.activePage === DashboardPages.IN_PROGRESS ? "active" : ""} href="##"
+                                        onClick={() => this.handleShow({ page: DashboardPages.IN_PROGRESS })}>
                                         <span class="icon task-inprogress" aria-hidden="true"></span>In Progress Tasks
                                     </a>
                                 </li>
                                 <li>
-                                    <a className={this.state.activePage === DashboardPages.DONE ? "active" : ""} href="##">
+                                    <a className={this.state.activePage === DashboardPages.DONE ? "active" : ""} href="##"
+                                        onClick={() => this.handleShow({ page: DashboardPages.DONE })}>
                                         <span class="icon task-done" aria-hidden="true"></span>Done Tasks
                                     </a>
                                 </li>
@@ -196,7 +200,8 @@ class Dashboard extends Component {
                             <span class="system-menu__title">system</span>
                             <ul class="sidebar-body-menu">
                                 <li>
-                                    <a className={this.state.activePage === DashboardPages.SETTINGS ? "active" : ""} href="##">
+                                    <a className={this.state.activePage === DashboardPages.SETTINGS ? "active" : ""} href="##"
+                                        onClick={() => this.handleShow({ page: DashboardPages.SETTINGS })}>
                                         <span class="icon setting" aria-hidden="true"></span>Settings
                                     </a>
                                 </li>
@@ -301,36 +306,35 @@ class Dashboard extends Component {
                             <div class="row">
                                 <div class="col-lg-12">
                                     <div class="users-table table-wrapper">
-                                        <table class="posts-table">
+                                        <Table responsive>
                                             <thead>
                                                 <tr class="users-table-info">
-                                                    <th>
-                                                        Task ID
-                                                    </th>
+                                                    <th>Task ID</th>
                                                     <th>Title</th>
-                                                    <th>Author</th>
+                                                    <th>Deadline</th>
+                                                    <th>Last Modification</th>
+                                                    <th>priority</th>
                                                     <th>Status</th>
-                                                    <th>Date</th>
                                                     <th>Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {this.state.taskList.map((item, i) => {
+                                                {this.state.taskList.map((item, index) => {
                                                     return [
-                                                        <tr>
-                                                            <td>
-                                                                1
+                                                        <tr key={index}>
+                                                            <td>{item.id}</td>
+                                                            <td>{item.title}</td>
+                                                            <td>{item.deadline}</td>
+                                                            <td>{item.modifiedTime}</td>
+                                                            <td>{item.priority}</td>
+                                                            <td>{[
+                                                                item.status === "SUSPENDED" ? <span class="badge-disabled">Suspended</span> : null,
+                                                                item.status === "IN_PROGRESS" ? <span class="badge-active">In Progress</span> : null,
+                                                                item.status === "SUSPENDED" ? <span class="badge-pending">Suspended</span>: null,
+                                                                item.status === "DONE" ? <span class="badge-success">Done</span> : null
+                                                            ]
+                                                            }
                                                             </td>
-                                                            <td>
-                                                                Starting your traveling blog with Vasco
-                                                            </td>
-                                                            <td>
-                                                                <div class="pages-table-img">
-                                                                    Jenny Wilson
-                                                                </div>
-                                                            </td>
-                                                            <td><span class="badge-pending">Pending</span></td>
-                                                            <td>17.04.2021</td>
                                                             <td>
                                                                 <span class="p-relative">
                                                                     <button class="dropdown-btn transparent-btn" type="button" title="More info">
@@ -347,7 +351,7 @@ class Dashboard extends Component {
                                                     ];
                                                 })}
                                             </tbody>
-                                        </table>
+                                        </Table>
                                     </div>
                                 </div>
                             </div>

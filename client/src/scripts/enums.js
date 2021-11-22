@@ -8,16 +8,16 @@ const DashboardPages = {
 };
 
 const TaskStatus = {
-  TODO: 1,
-  IN_PROGRESS: 2,
-  SUSPENDED: 3,
-  DONE: 4
+  TODO: "TODO",
+  IN_PROGRESS: "IN_PROGRESS",
+  SUSPENDED: "SUSPENDED",
+  DONE: "DONE"
 }
 
 const TaskPriority = {
-  HIGH: 1,
-  NORMAL: 2,
-  LOW: 3
+  HIGH: "HIGH",
+  NORMAL: "NORMAL",
+  LOW: "LOW"
 }
 
 export { DashboardPages, TaskStatus, TaskPriority };

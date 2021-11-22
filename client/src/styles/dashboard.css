@@ -1055,7 +1055,7 @@
  }
  
  .document {
-   background-image: url(../img/svg/Bulk/Tick Square.svg);
+   background-image: url("../img/svg/Bulk/Document-white.svg");
    width: 24px;
    height: 24px;
  }

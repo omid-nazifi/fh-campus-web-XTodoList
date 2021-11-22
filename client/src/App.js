@@ -46,9 +46,9 @@ class App extends Component {
         </div>
 
         <ul class="nav col-md-4 justify-content-end list-unstyled d-flex">
-          <li class="ms-3"><a class="text-muted" href="#" aria-label="Twitter"><BsTwitter /></a></li>
-          <li class="ms-3"><a class="text-muted" href="#" aria-label="Instagram"><BsInstagram /></a></li>
-          <li class="ms-3"><a class="text-muted" href="#" aria-label="Facebbok"><BsFacebook /></a></li>
+          <li class="ms-3"><a class="text-muted" href="#twitter" aria-label="Twitter"><BsTwitter /></a></li>
+          <li class="ms-3"><a class="text-muted" href="#instagram" aria-label="Instagram"><BsInstagram /></a></li>
+          <li class="ms-3"><a class="text-muted" href="#facebook" aria-label="Facebbok"><BsFacebook /></a></li>
         </ul>
       </footer>
     )

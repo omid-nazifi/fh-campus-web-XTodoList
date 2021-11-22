@@ -117,18 +117,18 @@ class CreateTask extends Component {
                                 <Row>
                                     <Form.Select aria-label="Priority">
                                         <option>select a Priority</option>
-                                        <option value="1">High</option>
-                                        <option value="2">Medium</option>
-                                        <option value="3">Low</option>
+                                        <option value="High">High</option>
+                                        <option value="NORMAL">NORMAL</option>
+                                        <option value="Low">Low</option>
                                     </Form.Select>
                                 </Row>
                                 <Row>
                                     <Form.Select aria-label="Status">
                                         <option>select a status</option>
-                                        <option value="1">ToDo</option>
-                                        <option value="2">In Progress</option>
-                                        <option value="3">Suspended</option>
-                                        <option value="4">Done</option>
+                                        <option value="TODO">ToDo</option>
+                                        <option value="IN_PROGRESS">In Progress</option>
+                                        <option value="SUSPENDED">Suspended</option>
+                                        <option value="DONE">Done</option>
                                     </Form.Select>
                                 </Row>
                                 <Row>
