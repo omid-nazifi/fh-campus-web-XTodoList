@@ -1,5 +1,6 @@
 const DashboardPages = {
   CREATE_TASK: "create_task",
+  EDIT_TASK: "edit_task",
   BOARD: "board",
   TODO: "todo",
   IN_PROGRESS: "in_progress",

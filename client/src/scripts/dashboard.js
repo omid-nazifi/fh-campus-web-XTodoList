@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BsMoonFill, BsSearch, BsSun, BsThreeDots } from 'react-icons/bs';
+import { BsMoonFill, BsPencilSquare, BsSearch, BsSun, BsTrash } from 'react-icons/bs';
 import '../styles/dashboard.css';
 import Logo from '../img/logo512.png';
 import maleAvatar from '../img/avatar/avatar-illustrated-02.png';
@@ -21,7 +21,8 @@ class Dashboard extends Component {
             darkMode: false,
             showNewTaskModal: false,
             newTaskModalTitle: '',
-            taskList: []
+            taskList: [],
+            selectedTask: null
         }
         this.loadTasks = this.loadTasks.bind(this);
     }
@@ -43,13 +44,22 @@ class Dashboard extends Component {
         }
     }
 
-    handleShow = (page) => {
-        switch (page.page) {
+    handleShow = (page, task) => {
+        switch (page) {
             case DashboardPages.CREATE_TASK:
                 this.setState({
                     showNewTaskModal: true,
                     newTaskModalTitle: 'Create new Task',
                 });
+                return;
+            case DashboardPages.EDIT_TASK:
+                if (task) {
+                    this.setState({
+                        showNewTaskModal: true,
+                        newTaskModalTitle: 'Edit TaskId ' + task.id,
+                        selectedTask: task
+                    });
+                }
                 return;
             case DashboardPages.TODO:
                 this.setState({
@@ -100,7 +110,7 @@ class Dashboard extends Component {
 
     async loadTasks(page = DashboardPages.BOARD) {
         let url = 'http://localhost:8080/tasks/user/' + this.state.userId;
-        switch (page.page) {
+        switch (page) {
             case DashboardPages.TODO:
                 url += '/status/' + TaskStatus.TODO;
                 break;
@@ -136,8 +146,8 @@ class Dashboard extends Component {
 
             console.log(result.data);
             this.setState({
-                taskList : result.data
-             });
+                taskList: result.data
+            });
         } catch (err) {
             console.log(err.message);
         }
@@ -167,37 +177,38 @@ class Dashboard extends Component {
                         <div className="sidebar-body">
                             <ul className="sidebar-body-menu">
                                 <li>
-                                    <a href="##" role="button" onClick={() => this.handleShow({ page: DashboardPages.CREATE_TASK })}>
+                                    <a href="##" role="button" onClick={() => this.handleShow(DashboardPages.CREATE_TASK)}>
                                         <span className="icon new_task" aria-hidden="true"></span>New Task
                                     </a>
                                     <CreateTask
                                         show={this.state.showNewTaskModal}
                                         title={this.state.newTaskModalTitle}
                                         userId={this.state.userId}
+                                        task={this.state.selectedTask}
                                         onClick={this.handleCreateTaskModalClose}
                                         onHide={this.handleCreateTaskModalClose} />
                                 </li>
                                 <li>
                                     <a className={this.state.activePage === DashboardPages.BOARD ? "active" : ""} href="##"
-                                        onClick={() => this.handleShow({ page: DashboardPages.BOARD })}>
+                                        onClick={() => this.handleShow(DashboardPages.BOARD)}>
                                         <span className="icon document" aria-hidden="true"></span>Board (all)
                                     </a>
                                 </li>
                                 <li>
                                     <a className={this.state.activePage === DashboardPages.TODO ? "active" : ""} href="##"
-                                        onClick={() => this.handleShow({ page: DashboardPages.TODO })}>
+                                        onClick={() => this.handleShow(DashboardPages.TODO)}>
                                         <span className="icon task-todo" aria-hidden="true"></span>Todo Tasks
                                     </a>
                                 </li>
                                 <li>
                                     <a className={this.state.activePage === DashboardPages.IN_PROGRESS ? "active" : ""} href="##"
-                                        onClick={() => this.handleShow({ page: DashboardPages.IN_PROGRESS })}>
+                                        onClick={() => this.handleShow(DashboardPages.IN_PROGRESS)}>
                                         <span className="icon task-inprogress" aria-hidden="true"></span>In Progress Tasks
                                     </a>
                                 </li>
                                 <li>
                                     <a className={this.state.activePage === DashboardPages.DONE ? "active" : ""} href="##"
-                                        onClick={() => this.handleShow({ page: DashboardPages.DONE })}>
+                                        onClick={() => this.handleShow(DashboardPages.DONE)}>
                                         <span className="icon task-done" aria-hidden="true"></span>Done Tasks
                                     </a>
                                 </li>
@@ -206,7 +217,7 @@ class Dashboard extends Component {
                             <ul className="sidebar-body-menu">
                                 <li>
                                     <a className={this.state.activePage === DashboardPages.SETTINGS ? "active" : ""} href="##"
-                                        onClick={() => this.handleShow({ page: DashboardPages.SETTINGS })}>
+                                        onClick={() => this.handleShow(DashboardPages.SETTINGS)}>
                                         <span className="icon setting" aria-hidden="true"></span>Settings
                                     </a>
                                 </li>
@@ -320,7 +331,8 @@ class Dashboard extends Component {
                                                     <th>Last Modification</th>
                                                     <th>priority</th>
                                                     <th>Status</th>
-                                                    <th>Action</th>
+                                                    <th>Edit</th>
+                                                    <th>Delete</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -342,14 +354,20 @@ class Dashboard extends Component {
                                                             </td>
                                                             <td>
                                                                 <span className="p-relative">
-                                                                    <button className="dropdown-btn transparent-btn" type="button" title="More info">
-                                                                        <div className="sr-only">More info</div>
-                                                                        <i aria-hidden="true"><BsThreeDots /></i>
+                                                                    <button className="dropdown-btn transparent-btn" type="button" title="More info" value={item}
+                                                                    onClick={() => this.handleShow(DashboardPages.EDIT_TASK, item)}>
+                                                                        <div className="sr-only">Edit</div>
+                                                                        <i aria-hidden="true"><BsPencilSquare/></i>
                                                                     </button>
-                                                                    <ul className="users-item-dropdown dropdown">
-                                                                        <li><a href="##">Edit</a></li>
-                                                                        <li><a href="##">Trash</a></li>
-                                                                    </ul>
+                                                                </span>
+                                                            </td>
+                                                            <td>
+                                                                <span className="p-relative">
+                                                                    <button className="dropdown-btn transparent-btn" type="button" title="More info"
+                                                                    >
+                                                                        <div className="sr-only">Delete</div>
+                                                                        <i aria-hidden="true"><BsTrash/></i>
+                                                                    </button>
                                                                 </span>
                                                             </td>
                                                         </tr>

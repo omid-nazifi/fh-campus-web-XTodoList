@@ -1,18 +1,18 @@
 import React, { Component } from 'react';
 import { Modal, Button, Container, FloatingLabel, Form, Row, Alert } from 'react-bootstrap';
 
-class CreateTask extends Component {
+class EditTask extends Component {
 
     constructor() {
         super();
         this.state = {
             task: null,
-            color: "",
-            deadline: "",
-            description: "",
-            priority: null,
-            taskStatus: null,
-            tags: "",
+            // color: "",
+            // deadline: "2021-11-21T11:41:36.306Z",
+            // description: "",
+            // priority: null,
+            // taskStatus: null,
+            // tags: "",
             title: "",
 
             serverMessage: "",
@@ -28,19 +28,7 @@ class CreateTask extends Component {
         this.create = this.create.bind(this);
     }
 
-    componentDidMount() {
-        if (this.props.selectedTask) {
-            var task = this.props.selectedTask;
-            this.setState({ 
-                color: task.color,
-                deadline: task.deadline,
-                description: task.description,
-                priority: task.priority,
-                taskStatus: task.status,
-                tags: task.tags,
-            })
-        }
-    }
+    
 
     setColor(event) {
         this.setState({ color: event.target.value })
