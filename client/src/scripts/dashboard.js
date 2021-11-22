@@ -23,6 +23,7 @@ class Dashboard extends Component {
             newTaskModalTitle: '',
             taskList: []
         }
+        this.loadTasks = this.loadTasks.bind(this);
     }
 
     toggleMenu() {
@@ -85,7 +86,7 @@ class Dashboard extends Component {
     };
 
     handleCreateTaskModalClose = (fromModal) => {
-        if (fromModal.msg) {
+        if (fromModal && fromModal.msg) {
             alert(fromModal.msg);// TODO if model was ok refresh list of tasks
         }
         this.setState({
@@ -93,7 +94,11 @@ class Dashboard extends Component {
         });
     };
 
-    async loadTasks(page) {
+    componentDidMount() {
+        this.loadTasks();
+    }
+
+    async loadTasks(page = DashboardPages.BOARD) {
         let url = 'http://localhost:8080/tasks/user/' + this.state.userId;
         switch (page.page) {
             case DashboardPages.TODO:
@@ -110,7 +115,6 @@ class Dashboard extends Component {
         }
 
         try {
-            console.log(url);
             const res = await fetch(url);
 
             if (!res.ok) {
@@ -131,7 +135,9 @@ class Dashboard extends Component {
             };
 
             console.log(result.data);
-            this.state.taskList = result.data;
+            this.setState({
+                taskList : result.data
+             });
         } catch (err) {
             console.log(err.message);
         }
@@ -139,7 +145,6 @@ class Dashboard extends Component {
 
     render() {
         const { menuShowing, darkMode } = this.state;
-        //this.handleShow({ page: DashboardPages.BOARD });
         return (
             <div className="page-flex">
                 <aside className={this.toggleMenu()}>
@@ -321,7 +326,7 @@ class Dashboard extends Component {
                                             <tbody>
                                                 {this.state.taskList.map((item, index) => {
                                                     return [
-                                                        <tr key={index}>
+                                                        <tr key={item.id}>
                                                             <td>{item.id}</td>
                                                             <td>{item.title}</td>
                                                             <td>{item.deadline}</td>
@@ -330,7 +335,7 @@ class Dashboard extends Component {
                                                             <td>{[
                                                                 item.status === "SUSPENDED" ? <span className="badge-disabled">Suspended</span> : null,
                                                                 item.status === "IN_PROGRESS" ? <span className="badge-active">In Progress</span> : null,
-                                                                item.status === "SUSPENDED" ? <span className="badge-pending">Suspended</span>: null,
+                                                                item.status === "SUSPENDED" ? <span className="badge-pending">Suspended</span> : null,
                                                                 item.status === "DONE" ? <span className="badge-success">Done</span> : null
                                                             ]
                                                             }
