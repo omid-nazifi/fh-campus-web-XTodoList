@@ -15,7 +15,7 @@ class App extends Component {
     const footer = this.footer();
     return (
       <Router>
-        <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+        <div className="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
           <main>
             <div className="App">
               <div className="auth-wrapper">
@@ -37,18 +37,18 @@ class App extends Component {
 
   footer() {
     return (
-      <footer class="container d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
-        <div class="col-md-4 d-flex align-items-center">
-          <a href="/" class="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1" aria-label="logo">
+      <footer className="container d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+        <div className="col-md-4 d-flex align-items-center">
+          <a href="/" className="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1" aria-label="logo">
             <img src={Logo} alt="Logo" height="24" />
           </a>
-          <span class="text-muted">&copy; 2021 XToDo List, Inc</span>
+          <span className="text-muted">&copy; 2021 XToDo List, Inc</span>
         </div>
 
-        <ul class="nav col-md-4 justify-content-end list-unstyled d-flex">
-          <li class="ms-3"><a class="text-muted" href="#twitter" aria-label="Twitter"><BsTwitter /></a></li>
-          <li class="ms-3"><a class="text-muted" href="#instagram" aria-label="Instagram"><BsInstagram /></a></li>
-          <li class="ms-3"><a class="text-muted" href="#facebook" aria-label="Facebbok"><BsFacebook /></a></li>
+        <ul className="nav col-md-4 justify-content-end list-unstyled d-flex">
+          <li className="ms-3"><a className="text-muted" href="#twitter" aria-label="Twitter"><BsTwitter /></a></li>
+          <li className="ms-3"><a className="text-muted" href="#instagram" aria-label="Instagram"><BsInstagram /></a></li>
+          <li className="ms-3"><a className="text-muted" href="#facebook" aria-label="Facebbok"><BsFacebook /></a></li>
         </ul>
       </footer>
     )

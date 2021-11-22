@@ -141,29 +141,29 @@ class Dashboard extends Component {
         const { menuShowing, darkMode } = this.state;
         //this.handleShow({ page: DashboardPages.BOARD });
         return (
-            <div class="page-flex">
-                <aside class={this.toggleMenu()}>
-                    <div class="sidebar-start">
-                        <div class="sidebar-head">
-                            <a href="/" class="logo-wrapper" title="Home">
-                                <span class="sr-only">Home</span>
-                                <img src={Logo} alt="Logo" class="icon logo" aria-hidden="true" />
-                                <div class="logo-text">
-                                    <span class="logo-title">XToDo</span>
-                                    <span class="logo-subtitle">Dashboard</span>
+            <div className="page-flex">
+                <aside className={this.toggleMenu()}>
+                    <div className="sidebar-start">
+                        <div className="sidebar-head">
+                            <a href="/" className="logo-wrapper" title="Home">
+                                <span className="sr-only">Home</span>
+                                <img src={Logo} alt="Logo" className="icon logo" aria-hidden="true" />
+                                <div className="logo-text">
+                                    <span className="logo-title">XToDo</span>
+                                    <span className="logo-subtitle">Dashboard</span>
                                 </div>
 
                             </a>
-                            <button class="sidebar-toggle transparent-btn" title="Menu" type="button" onClick={() => this.setState({ menuShowing: !menuShowing })}>
-                                <span class="sr-only">Toggle menu</span>
-                                <span class="icon menu-toggle" aria-hidden="true"></span>
+                            <button className="sidebar-toggle transparent-btn" title="Menu" type="button" onClick={() => this.setState({ menuShowing: !menuShowing })}>
+                                <span className="sr-only">Toggle menu</span>
+                                <span className="icon menu-toggle" aria-hidden="true"></span>
                             </button>
                         </div>
-                        <div class="sidebar-body">
-                            <ul class="sidebar-body-menu">
+                        <div className="sidebar-body">
+                            <ul className="sidebar-body-menu">
                                 <li>
                                     <a href="##" role="button" onClick={() => this.handleShow({ page: DashboardPages.CREATE_TASK })}>
-                                        <span class="icon new_task" aria-hidden="true"></span>New Task
+                                        <span className="icon new_task" aria-hidden="true"></span>New Task
                                     </a>
                                     <CreateTask
                                         show={this.state.showNewTaskModal}
@@ -175,114 +175,114 @@ class Dashboard extends Component {
                                 <li>
                                     <a className={this.state.activePage === DashboardPages.BOARD ? "active" : ""} href="##"
                                         onClick={() => this.handleShow({ page: DashboardPages.BOARD })}>
-                                        <span class="icon document" aria-hidden="true"></span>Board (all)
+                                        <span className="icon document" aria-hidden="true"></span>Board (all)
                                     </a>
                                 </li>
                                 <li>
                                     <a className={this.state.activePage === DashboardPages.TODO ? "active" : ""} href="##"
                                         onClick={() => this.handleShow({ page: DashboardPages.TODO })}>
-                                        <span class="icon task-todo" aria-hidden="true"></span>Todo Tasks
+                                        <span className="icon task-todo" aria-hidden="true"></span>Todo Tasks
                                     </a>
                                 </li>
                                 <li>
                                     <a className={this.state.activePage === DashboardPages.IN_PROGRESS ? "active" : ""} href="##"
                                         onClick={() => this.handleShow({ page: DashboardPages.IN_PROGRESS })}>
-                                        <span class="icon task-inprogress" aria-hidden="true"></span>In Progress Tasks
+                                        <span className="icon task-inprogress" aria-hidden="true"></span>In Progress Tasks
                                     </a>
                                 </li>
                                 <li>
                                     <a className={this.state.activePage === DashboardPages.DONE ? "active" : ""} href="##"
                                         onClick={() => this.handleShow({ page: DashboardPages.DONE })}>
-                                        <span class="icon task-done" aria-hidden="true"></span>Done Tasks
+                                        <span className="icon task-done" aria-hidden="true"></span>Done Tasks
                                     </a>
                                 </li>
                             </ul>
-                            <span class="system-menu__title">system</span>
-                            <ul class="sidebar-body-menu">
+                            <span className="system-menu__title">system</span>
+                            <ul className="sidebar-body-menu">
                                 <li>
                                     <a className={this.state.activePage === DashboardPages.SETTINGS ? "active" : ""} href="##"
                                         onClick={() => this.handleShow({ page: DashboardPages.SETTINGS })}>
-                                        <span class="icon setting" aria-hidden="true"></span>Settings
+                                        <span className="icon setting" aria-hidden="true"></span>Settings
                                     </a>
                                 </li>
                             </ul>
                         </div>
                     </div>
                 </aside>
-                <div class="main-wrapper">
-                    <nav class="main-nav--bg">
-                        <div class="container main-nav">
-                            <div class="main-nav-start">
-                                <div class="search-wrapper">
+                <div className="main-wrapper">
+                    <nav className="main-nav--bg">
+                        <div className="container main-nav">
+                            <div className="main-nav-start">
+                                <div className="search-wrapper">
                                     <i aria-hidden="true"><BsSearch /></i>
                                     <input type="text" placeholder="Enter keywords ..." required />
                                 </div>
                             </div>
-                            <div class="main-nav-end">
-                                <button class="sidebar-toggle transparent-btn" title="Menu" type="button" onClick={() => this.setState({ menuShowing: !menuShowing })}>
-                                    <span class="sr-only">Toggle menu</span>
-                                    <span class="icon menu-toggle--gray" aria-hidden="true"></span>
+                            <div className="main-nav-end">
+                                <button className="sidebar-toggle transparent-btn" title="Menu" type="button" onClick={() => this.setState({ menuShowing: !menuShowing })}>
+                                    <span className="sr-only">Toggle menu</span>
+                                    <span className="icon menu-toggle--gray" aria-hidden="true"></span>
                                 </button>
-                                <button class="theme-switcher gray-circle-btn" type="button" title="Switch theme" onClick={() => { this.setState({ darkMode: !darkMode }); this.toggleTheme() }}>
-                                    <span class="sr-only">Switch theme</span>
-                                    <i class="sun-icon" aria-hidden="true"><BsSun /></i>
-                                    <i class="moon-icon" aria-hidden="true"><BsMoonFill /></i>
+                                <button className="theme-switcher gray-circle-btn" type="button" title="Switch theme" onClick={() => { this.setState({ darkMode: !darkMode }); this.toggleTheme() }}>
+                                    <span className="sr-only">Switch theme</span>
+                                    <i className="sun-icon" aria-hidden="true"><BsSun /></i>
+                                    <i className="moon-icon" aria-hidden="true"><BsMoonFill /></i>
                                 </button>
-                                <div class="notification-wrapper">
-                                    <button class="gray-circle-btn dropdown-btn" title="To messages" type="button">
-                                        <span class="sr-only">To messages</span>
-                                        <span class="icon notification active" aria-hidden="true"></span>
+                                <div className="notification-wrapper">
+                                    <button className="gray-circle-btn dropdown-btn" title="To messages" type="button">
+                                        <span className="sr-only">To messages</span>
+                                        <span className="icon notification active" aria-hidden="true"></span>
                                     </button>
-                                    <ul class="users-item-dropdown notification-dropdown dropdown">
+                                    <ul className="users-item-dropdown notification-dropdown dropdown">
                                         <li>
                                             <a href="##">
-                                                <div class="notification-dropdown-icon info">
+                                                <div className="notification-dropdown-icon info">
                                                     <i data-feather="check"></i>
                                                 </div>
-                                                <div class="notification-dropdown-text">
-                                                    <span class="notification-dropdown__title">System just updated</span>
-                                                    <span class="notification-dropdown__subtitle">The system has been successfully upgraded. Read more
+                                                <div className="notification-dropdown-text">
+                                                    <span className="notification-dropdown__title">System just updated</span>
+                                                    <span className="notification-dropdown__subtitle">The system has been successfully upgraded. Read more
                                                         here.</span>
                                                 </div>
                                             </a>
                                         </li>
                                         <li>
                                             <a href="##">
-                                                <div class="notification-dropdown-icon danger">
+                                                <div className="notification-dropdown-icon danger">
                                                     <i data-feather="info" aria-hidden="true"></i>
                                                 </div>
-                                                <div class="notification-dropdown-text">
-                                                    <span class="notification-dropdown__title">The cache is full!</span>
-                                                    <span class="notification-dropdown__subtitle">Unnecessary caches take up a lot of memory space and
+                                                <div className="notification-dropdown-text">
+                                                    <span className="notification-dropdown__title">The cache is full!</span>
+                                                    <span className="notification-dropdown__subtitle">Unnecessary caches take up a lot of memory space and
                                                         interfere ...</span>
                                                 </div>
                                             </a>
                                         </li>
                                         <li>
                                             <a href="##">
-                                                <div class="notification-dropdown-icon info">
+                                                <div className="notification-dropdown-icon info">
                                                     <i data-feather="check" aria-hidden="true"></i>
                                                 </div>
-                                                <div class="notification-dropdown-text">
-                                                    <span class="notification-dropdown__title">New Subscriber here!</span>
-                                                    <span class="notification-dropdown__subtitle">A new subscriber has subscribed.</span>
+                                                <div className="notification-dropdown-text">
+                                                    <span className="notification-dropdown__title">New Subscriber here!</span>
+                                                    <span className="notification-dropdown__subtitle">A new subscriber has subscribed.</span>
                                                 </div>
                                             </a>
                                         </li>
                                         <li>
-                                            <a class="link-to-page" href="##">Go to Notifications page</a>
+                                            <a className="link-to-page" href="##">Go to Notifications page</a>
                                         </li>
                                     </ul>
                                 </div>
-                                <div class="nav-user-wrapper">
-                                    <button href="##" class="nav-user-btn dropdown-btn" title="My profile" type="button">
-                                        <span class="sr-only">My profile</span>
-                                        <span class="nav-user-img">
+                                <div className="nav-user-wrapper">
+                                    <button href="##" className="nav-user-btn dropdown-btn" title="My profile" type="button">
+                                        <span className="sr-only">My profile</span>
+                                        <span className="nav-user-img">
                                             <img src={maleAvatar} alt="User name" />
 
                                         </span>
                                     </button>
-                                    <ul class="users-item-dropdown nav-user-dropdown dropdown">
+                                    <ul className="users-item-dropdown nav-user-dropdown dropdown">
                                         <li><a href="##">
                                             <i data-feather="user" aria-hidden="true"></i>
                                             <span>Profile</span>
@@ -291,7 +291,7 @@ class Dashboard extends Component {
                                             <i data-feather="settings" aria-hidden="true"></i>
                                             <span>Account settings</span>
                                         </a></li>
-                                        <li><a class="danger" href="##">
+                                        <li><a className="danger" href="##">
                                             <i data-feather="log-out" aria-hidden="true"></i>
                                             <span>Log out</span>
                                         </a></li>
@@ -300,15 +300,15 @@ class Dashboard extends Component {
                             </div>
                         </div>
                     </nav>
-                    <main class="main users" id="skip-target">
-                        <div class="container">
-                            <h2 class="main-title">{this.state.pageTitle}</h2>
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <div class="users-table table-wrapper">
+                    <main className="main users" id="skip-target">
+                        <div className="container">
+                            <h2 className="main-title">{this.state.pageTitle}</h2>
+                            <div className="row">
+                                <div className="col-lg-12">
+                                    <div className="users-table table-wrapper">
                                         <Table responsive>
                                             <thead>
-                                                <tr class="users-table-info">
+                                                <tr className="users-table-info">
                                                     <th>Task ID</th>
                                                     <th>Title</th>
                                                     <th>Deadline</th>
@@ -328,20 +328,20 @@ class Dashboard extends Component {
                                                             <td>{item.modifiedTime}</td>
                                                             <td>{item.priority}</td>
                                                             <td>{[
-                                                                item.status === "SUSPENDED" ? <span class="badge-disabled">Suspended</span> : null,
-                                                                item.status === "IN_PROGRESS" ? <span class="badge-active">In Progress</span> : null,
-                                                                item.status === "SUSPENDED" ? <span class="badge-pending">Suspended</span>: null,
-                                                                item.status === "DONE" ? <span class="badge-success">Done</span> : null
+                                                                item.status === "SUSPENDED" ? <span className="badge-disabled">Suspended</span> : null,
+                                                                item.status === "IN_PROGRESS" ? <span className="badge-active">In Progress</span> : null,
+                                                                item.status === "SUSPENDED" ? <span className="badge-pending">Suspended</span>: null,
+                                                                item.status === "DONE" ? <span className="badge-success">Done</span> : null
                                                             ]
                                                             }
                                                             </td>
                                                             <td>
-                                                                <span class="p-relative">
-                                                                    <button class="dropdown-btn transparent-btn" type="button" title="More info">
-                                                                        <div class="sr-only">More info</div>
+                                                                <span className="p-relative">
+                                                                    <button className="dropdown-btn transparent-btn" type="button" title="More info">
+                                                                        <div className="sr-only">More info</div>
                                                                         <i aria-hidden="true"><BsThreeDots /></i>
                                                                     </button>
-                                                                    <ul class="users-item-dropdown dropdown">
+                                                                    <ul className="users-item-dropdown dropdown">
                                                                         <li><a href="##">Edit</a></li>
                                                                         <li><a href="##">Trash</a></li>
                                                                     </ul>
