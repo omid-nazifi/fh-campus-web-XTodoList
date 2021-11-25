@@ -75,7 +75,7 @@ class SignUp extends Component {
                 <h3>Sign Up</h3>
                 <FloatingLabel
                   controlId="floatingInput"
-                  label="Username"
+                  label="Name"
                   className="mb-3"
                 >
                   <Form.Control
@@ -85,13 +85,13 @@ class SignUp extends Component {
                     placeholder="Name"
                   />
                   <Form.Control.Feedback type="invalid">
-                    Please provide a username.
+                    Please provide a name.
                   </Form.Control.Feedback>
                 </FloatingLabel>
 
                 <FloatingLabel
                   controlId="floatingInput"
-                  label="Email address"
+                  label="Email address (or username)"
                   className="mb-3"
                 >
                   <Form.Control
