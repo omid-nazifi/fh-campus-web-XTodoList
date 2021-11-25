@@ -30,7 +30,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public static final String JWT_HEADER = "Token";
     public static final String JWT_TOKEN_PREFIX = "Bearer ";
     public static final String JWT_CLAIM = "authorities";
-    public static final int JWT_TOKEN_EXPIRATION = 600000; //10 min
+    public static final int JWT_TOKEN_EXPIRATION = 7200000; //10 min
     public static final String JWT_SECRET_KEY = "mySecretKey";
 
     private static final String[] AUTH_WHITELIST = {
