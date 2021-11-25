@@ -35,4 +35,6 @@ public class UserDto implements Serializable {
     @ValidPassword(groups = OnCreate.class)
     @Null(groups = OnUpdate.class)
     private String password;
+
+    private String token;
 }

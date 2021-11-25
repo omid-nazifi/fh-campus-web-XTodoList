@@ -1,4 +1,4 @@
-package edu.campuswien.webproject.todolist.service;
+package edu.campuswien.webproject.todolist.model;
 
 public enum Priority {
     HIGH(1, "High"),

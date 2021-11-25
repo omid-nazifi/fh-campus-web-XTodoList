@@ -1,7 +1,5 @@
 package edu.campuswien.webproject.todolist.model;
 
-import edu.campuswien.webproject.todolist.service.Priority;
-import edu.campuswien.webproject.todolist.service.Status;
 import lombok.Getter;
 import lombok.Setter;
 
