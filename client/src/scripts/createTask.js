@@ -8,18 +8,7 @@ class CreateTask extends Component {
     constructor() {
         super();
         this.state = {
-            selectedTask: {
-                color: "#000000",
-                comments: [],
-                deadline: "",
-                description: "",
-                id: 0,
-                parentId: 0,
-                priority: "",
-                status: "",
-                tags: "",
-                title: "",
-            },
+            selectedTaskId: 0,
             color: "#000000",
             deadline: "",
             description: "",
@@ -106,6 +95,7 @@ class CreateTask extends Component {
     }
 
     update(event) {
+        console.log('update', this.state.selectedTask, event);
         fetch('http://localhost:8080/tasks', {
             method: 'put',
             headers: {
@@ -114,7 +104,7 @@ class CreateTask extends Component {
                 'Token': AuthService.getCurrentUser().token
             },
             body: JSON.stringify({
-                "id": this.props.selectedTask.id,
+                "id": this.state.selectedTaskId,
                 "color": this.state.color,
                 "deadline": this.state.deadline,
                 "description": this.state.description,
@@ -144,9 +134,12 @@ class CreateTask extends Component {
     }
 
     static getDerivedStateFromProps(props, state) {
-        if (props.selectedTask.id !== state.selectedTask.id) {
+        console.log('getDerivedStateFromProps');
+        if (props.selectedTask.id !== state.selectedTaskId) {
+            console.log('props.selectedTask', props.selectedTask.id, state.selectedTaskId);
             const task = props.selectedTask;
             return {
+                selectedTaskId: task.id,
                 color: task.color,
                 deadline: task.deadline,
                 description: task.description,

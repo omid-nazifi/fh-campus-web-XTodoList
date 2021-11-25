@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BsMoonFill, BsPencilSquare, BsSearch, BsSun, BsTrash } from 'react-icons/bs';
+import { BsMoonFill, BsPencilSquare, BsSearch, BsSquareFill, BsSun, BsTrash } from 'react-icons/bs';
 import '../styles/dashboard.css';
 import Logo from '../img/logo512.png';
 import maleAvatar from '../img/avatar/avatar-illustrated-02.png';
@@ -138,7 +138,7 @@ class Dashboard extends Component {
 
     handleCreateTaskModalClose = (fromModal) => {
         if (fromModal && fromModal.msg) {
-            alert(fromModal.msg);// TODO if model was ok refresh list of tasks
+            this.loadTasks(this.state.activePage);
         }
         this.setState({
             showNewTaskModal: false
@@ -447,11 +447,12 @@ class Dashboard extends Component {
                                         <Table responsive>
                                             <thead>
                                                 <tr className="users-table-info">
-                                                    <th>Task ID</th>
+                                                    <th>ID</th>
+                                                    <th></th>
                                                     <th>Title</th>
                                                     <th>Deadline</th>
                                                     <th>Last Modification</th>
-                                                    <th>priority</th>
+                                                    <th>Priority</th>
                                                     <th>Status</th>
                                                     <th>Edit</th>
                                                     <th>Delete</th>
@@ -462,12 +463,20 @@ class Dashboard extends Component {
                                                     return [
                                                         <tr key={item.id}>
                                                             <td>{item.id}</td>
+                                                            <td><BsSquareFill color={item.color}/></td>
                                                             <td>{item.title}</td>
                                                             <td>{item.deadline}</td>
                                                             <td>{item.modifiedTime}</td>
-                                                            <td>{item.priority}</td>
+                                                            <td>
+                                                            {[
+                                                                item.priority === "HIGH" ? <span className="priority-high">HIGH</span> : null,
+                                                                item.priority === "NORMAL" ? <span className="priority-normal">NORMAL</span> : null,
+                                                                item.priority === "LOW" ? <span className="priority-low">LOW</span> : null,
+                                                            ]
+                                                            }
+                                                            </td>
                                                             <td>{[
-                                                                item.status === "SUSPENDED" ? <span className="badge-disabled">Suspended</span> : null,
+                                                                item.status === "TODO" ? <span className="badge-disabled">ToDo</span> : null,
                                                                 item.status === "IN_PROGRESS" ? <span className="badge-active">In Progress</span> : null,
                                                                 item.status === "SUSPENDED" ? <span className="badge-pending">Suspended</span> : null,
                                                                 item.status === "DONE" ? <span className="badge-success">Done</span> : null

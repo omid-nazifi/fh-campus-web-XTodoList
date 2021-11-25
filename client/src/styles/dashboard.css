@@ -1227,44 +1227,6 @@
    height: 27px;
  }
  
- .library-table-name span {
-   display: -webkit-box;
-   display: -ms-flexbox;
-   display: flex;
-   -webkit-box-align: center;
-   -ms-flex-align: center;
-   align-items: center;
-   -webkit-box-pack: center;
-   -ms-flex-pack: center;
-   justify-content: center;
-   width: 20px;
-   height: 20px;
-   padding: 2px 3px;
-   margin-right: 5px;
-   border-radius: 3px;
-   color: #fff;
- }
- 
- .library-table-name span.info {
-   background-color: #5887ff;
- }
- 
- .library-table-name span.danger {
-   background-color: #f26464;
- }
- 
- .library-table-name span.warning {
-   background-color: #ffb648;
- }
- 
- .library-table-name span.success {
-   background-color: #4bde97;
- }
- 
- .library-table-name span.purple {
-   background-color: #5f2eea;
- }
- 
  .dropzone-start svg {
    width: 60px;
    height: 60px;
@@ -1746,8 +1708,8 @@
  }
  
  .badge-disabled {
-   color: white;
-   background-color: #ffb648;
+  color: #5f5f5e;
+  background-color: rgba(163, 165, 172, 0.1);
  }
  
  .badge-trashed {
@@ -1759,6 +1721,18 @@
    color: #4bde97;
    background-color: rgba(75, 222, 151, 0.1);
  }
+
+ .priority-high {
+  color: #ec1919;
+}
+
+.priority-normal {
+  color: #e27024;
+}
+
+.priority-low {
+  color: #ffb648;
+}
  
  input {
    border-radius: 6px;
