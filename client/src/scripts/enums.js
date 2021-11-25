@@ -5,7 +5,8 @@ const DashboardPages = {
   TODO: "todo",
   IN_PROGRESS: "in_progress",
   DONE: "done",
-  SETTINGS: "settings"
+  SETTINGS: "settings",
+  EDIT_PROFILE: "edit_profile"
 };
 
 const TaskStatus = {

@@ -82,7 +82,7 @@ class SignUp extends Component {
                     required
                     type="text"
                     onChange={this.Username}
-                    placeholder="Username"
+                    placeholder="Name"
                   />
                   <Form.Control.Feedback type="invalid">
                     Please provide a username.

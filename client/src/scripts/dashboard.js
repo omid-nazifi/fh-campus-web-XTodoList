@@ -8,6 +8,7 @@ import AuthService from '../services/auth.service';
 import CreateTask from './createTask';
 import { DashboardPages, TaskStatus } from './enums';
 import { Table } from 'react-bootstrap';
+import Profile from './profile';
 
 class Dashboard extends Component {
 
@@ -22,6 +23,8 @@ class Dashboard extends Component {
             darkMode: false,
             showNewTaskModal: false,
             newTaskModalTitle: '',
+            showProfileModal: false,
+            profileModalTitle: '',
             taskList: [],
             selectedTask: null
         }
@@ -47,6 +50,12 @@ class Dashboard extends Component {
 
     handleShow = (page, task) => {
         switch (page) {
+            case DashboardPages.EDIT_PROFILE:
+                this.setState({
+                    showProfileModal: true,
+                    profileModalTitle: 'Edit profile',
+                });
+                return;
             case DashboardPages.CREATE_TASK:
                 this.setState({
                     showNewTaskModal: true,
@@ -102,6 +111,12 @@ class Dashboard extends Component {
         }
         this.setState({
             showNewTaskModal: false
+        });
+    };
+
+    handleProfileModalClose = () => {
+        this.setState({
+            showProfileModal: false
         });
     };
 
@@ -201,6 +216,12 @@ class Dashboard extends Component {
                                         task={this.state.selectedTask}
                                         onClick={this.handleCreateTaskModalClose}
                                         onHide={this.handleCreateTaskModalClose} />
+                                    <Profile
+                                        show={this.state.showProfileModal}
+                                        title={this.state.profileModalTitle}
+                                        userId={this.state.userId}
+                                        onClick={this.handleProfileModalClose}
+                                        onHide={this.handleProfileModalClose} />
                                 </li>
                                 <li>
                                     <a className={this.state.activePage === DashboardPages.BOARD ? "active" : ""} href="##"
@@ -311,7 +332,7 @@ class Dashboard extends Component {
                                     </ul>
                                 </div>
                                 <div className="nav-user-wrapper">
-                                    <button href="##" className="nav-user-btn dropdown-btn" title="My profile" type="button">
+                                    <button href="##" className="nav-user-btn dropdown-btn" title="My profile" type="button" onClick={() => this.handleShow(DashboardPages.EDIT_PROFILE)}>
                                         <span className="sr-only">My profile</span>
                                         <span className="nav-user-img">
                                             <img src={maleAvatar} alt="User name" />
