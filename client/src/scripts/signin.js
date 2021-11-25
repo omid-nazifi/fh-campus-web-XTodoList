@@ -42,7 +42,6 @@ class SignIn extends Component {
         console.log(result);
         if (result.status != null) alert("Invalid credentials!");
         else {
-          alert("Successful login");
           this.props.history.push("/dashboard");
         }
       });

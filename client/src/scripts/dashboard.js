@@ -26,7 +26,18 @@ class Dashboard extends Component {
             showProfileModal: false,
             profileModalTitle: '',
             taskList: [],
-            selectedTask: null
+            selectedTask: {
+                color: "",
+                comments: [],
+                deadline: "",
+                description: "",
+                id: 0,
+                parentId: 0,
+                priority: "",
+                status: "",
+                tags: "",
+                title: "",
+              }
         }
         this.loadTasks = this.loadTasks.bind(this);
     }
@@ -60,6 +71,7 @@ class Dashboard extends Component {
                 this.setState({
                     showNewTaskModal: true,
                     newTaskModalTitle: 'Create new Task',
+                    selectedTask: {}
                 });
                 return;
             case DashboardPages.EDIT_TASK:
@@ -69,6 +81,7 @@ class Dashboard extends Component {
                         newTaskModalTitle: 'Edit TaskId ' + task.id,
                         selectedTask: task
                     });
+                    // console.log(this.state.newTaskModalTitle);
                 }
                 return;
             case DashboardPages.TODO:
@@ -213,7 +226,7 @@ class Dashboard extends Component {
                                         show={this.state.showNewTaskModal}
                                         title={this.state.newTaskModalTitle}
                                         userId={this.state.userId}
-                                        task={this.state.selectedTask}
+                                        selectedTask={this.state.selectedTask}
                                         onClick={this.handleCreateTaskModalClose}
                                         onHide={this.handleCreateTaskModalClose} />
                                     <Profile

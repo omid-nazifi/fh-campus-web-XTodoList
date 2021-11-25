@@ -1,19 +1,21 @@
 import React, { Component } from 'react';
 import { Modal, Button, Container, FloatingLabel, Form, Row, Alert } from 'react-bootstrap';
 
+import AuthService from '../services/auth.service';
+
 class CreateTask extends Component {
 
     constructor() {
         super();
         this.state = {
-            task: null,
             color: "",
             deadline: "",
             description: "",
-            priority: null,
-            taskStatus: null,
+            priority: "",
+            taskStatus: "",
             tags: "",
             title: "",
+            comments: [],
 
             serverMessage: "",
             showServerMessage: false
@@ -26,20 +28,7 @@ class CreateTask extends Component {
         this.setTags = this.setTags.bind(this);
         this.setTitle = this.setTitle.bind(this);
         this.create = this.create.bind(this);
-    }
-
-    componentDidMount() {
-        if (this.props.selectedTask) {
-            var task = this.props.selectedTask;
-            this.setState({ 
-                color: task.color,
-                deadline: task.deadline,
-                description: task.description,
-                priority: task.priority,
-                taskStatus: task.status,
-                tags: task.tags,
-            })
-        }
+        this.update = this.update.bind(this);
     }
 
     setColor(event) {
@@ -103,7 +92,52 @@ class CreateTask extends Component {
         });
     }
 
+    update(event) {
+        fetch('http://localhost:8080/tasks', {
+            method: 'put',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Token': AuthService.getCurrentUser().token
+            },
+            body: JSON.stringify({
+                "color": this.state.color,
+                // "comments": this.state.comments,
+                "deadline": this.state.deadline,
+                "description": this.state.description,
+                "priority": this.state.priority,
+                "status": this.state.taskStatus,
+                "tags": this.state.tags,
+                "title": this.state.title,
+                "userId": this.props.userId,
+            })
+        }).then((response) => {
+            if (!response.ok) {
+                console.log(response.json());
+                this.setState({ serverMessage: 'Something went wrong' });
+                this.setState({ showServerMessage: true });
+                throw new Error('Something went wrong');
+
+            } else return response.json();
+        }).then((data) => {
+            if (data.id != null) {
+                this.props.onClick({ msg: "success" })
+            }
+            else
+                this.props.onClick({ msg: "failed" })
+        }).catch((error) => {
+            console.log('error: ' + error);
+        });
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.selectedTask === {} || this.props.selectedTask.id !== prevProps.selectedTask.id) {
+            this.setState({ showServerMessage: false });
+        }
+      }
+
     render() {
+        const task = this.props.selectedTask;
         return (
             <div>
                 <Modal show={this.props.show} onHide={() => this.props.onHide()}>
@@ -122,7 +156,7 @@ class CreateTask extends Component {
                             <Form>
                                 <Row>
                                     <FloatingLabel controlId="taskTitle" label="Title" className="mb-3 form-input">
-                                        <Form.Control type="text" placeholder="Title" onChange={this.setTitle} />
+                                        <Form.Control type="text" placeholder="Title" onChange={this.setTitle} defaultValue={task.title}/>
                                     </FloatingLabel>
                                 </Row>
                                 <Row>
@@ -138,9 +172,9 @@ class CreateTask extends Component {
                                     <FloatingLabel controlId="taskPriority" label="Select Priority" className="mb-3 form-input">
                                         <Form.Select aria-label="Priority">
                                             <option>Select one</option>
-                                            <option value="High">High</option>
-                                            <option value="NORMAL">NORMAL</option>
-                                            <option value="Low">Low</option>
+                                            <option value="HIGH">High</option>
+                                            <option value="NORMAL">Normal</option>
+                                            <option value="LOW">Low</option>
                                         </Form.Select>
                                     </FloatingLabel>
                                 </Row>
@@ -181,7 +215,7 @@ class CreateTask extends Component {
 
                     <Modal.Footer>
                         <Button variant="secondary" onClick={() => this.props.onClick()} >Close</Button>
-                        <Button variant="primary" onClick={this.create}>Submit</Button>
+                        <Button variant="primary" onClick={this.props.selectedTask.id ? this.update : this.create}>Submit</Button>
                     </Modal.Footer>
 
                 </Modal>
