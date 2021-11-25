@@ -51,6 +51,7 @@ class Dashboard extends Component {
             }
         }
         this.loadTasks = this.loadTasks.bind(this);
+        this.taskModal = React.createRef();
     }
 
     toggleMenu() {
@@ -105,6 +106,7 @@ class Dashboard extends Component {
                         editMode: true,
                         selectedTask: task
                     });
+                    this.taskModal.current.loadHistory(task.id);
                     // console.log(this.state.newTaskModalTitle);
                 }
                 return;
@@ -304,7 +306,8 @@ class Dashboard extends Component {
                                         selectedTask={this.state.selectedTask}
                                         editMode={this.state.editMode}
                                         onClick={this.handleCreateTaskModalClose}
-                                        onHide={this.handleCreateTaskModalClose} />
+                                        onHide={this.handleCreateTaskModalClose}
+                                        ref={this.taskModal} />
                                     <Profile
                                         show={this.state.showProfileModal}
                                         title={this.state.profileModalTitle}

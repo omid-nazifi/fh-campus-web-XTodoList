@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Modal, Button, Container, FloatingLabel, Form, Row, Alert } from 'react-bootstrap';
-
+import { Modal, Button, Container, FloatingLabel, Form, Row, Alert, ListGroup } from 'react-bootstrap';
+import '../styles/task.css';
 import AuthService from '../services/auth.service';
 
 class CreateTask extends Component {
@@ -17,7 +17,7 @@ class CreateTask extends Component {
             tags: "",
             title: "",
             comments: [],
-
+            histories: [],
             serverMessage: "",
             showServerMessage: false
         }
@@ -158,9 +158,41 @@ class CreateTask extends Component {
     }
 
 
-    componentDidUpdate(prevProps) {
-        if (this.props.editMode === true) {
-            
+    async loadHistory(taskId) {
+        let url = 'http://localhost:8080/histories/task/' + taskId;
+        const settings = {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'Token' : AuthService.getCurrentUser().token
+            }
+        };
+
+        try {
+            const res = await fetch(url, settings);
+
+            if (!res.ok) {
+                const message = `An error has occured: ${res.status} - ${res.statusText}`;
+                throw new Error(message);
+            }
+
+            const data = await res.json();
+
+            const result = {
+                status: res.status + "-" + res.statusText,
+                headers: {
+                    "Content-Type": res.headers.get("Content-Type"),
+                    "Content-Length": res.headers.get("Content-Length"),
+                },
+                length: res.headers.get("Content-Length"),
+                data: data,
+            };
+
+            console.log(result.data);
+            this.setState({histories: data});
+        } catch (err) {
+            console.log(err.message);
         }
     }
 
@@ -252,6 +284,23 @@ class CreateTask extends Component {
                                 </Row>
                             </Form>
                         </Container>
+                        <div>
+                            <br/>
+                            <ListGroup>
+                                <b>HISTORY</b>
+                                <hr />
+                                {this.state.histories.map((item, index) => {
+                                    return [
+                                        <ListGroup.Item>
+                                            <div>
+                                                <div>{item.text}</div>
+                                                <div className="small">{item.creationTime}</div>
+                                            </div>
+                                        </ListGroup.Item>
+                                    ];
+                                })}
+                            </ListGroup>
+                        </div>
                     </Modal.Body>
 
                     <Modal.Footer>

@@ -28,7 +28,7 @@ public class HistoryController {
     }
 
     @CrossOrigin(origins="*")
-    @GetMapping(path = "/Histories/task/{taskId}")
+    @GetMapping(path = "/histories/task/{taskId}")
     public List<HistoryDto> getHistoriesOfTask(@PathVariable long taskId) {
         List<History> histories = historyService.getHistoriesByTaskId(taskId);
         List<HistoryDto> historiesData = new ArrayList<>();
