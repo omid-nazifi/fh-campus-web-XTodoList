@@ -7,7 +7,7 @@ import maleAvatar from '../img/avatar/avatar-illustrated-02.png';
 import AuthService from '../services/auth.service';
 import CreateTask from './createTask';
 import { DashboardPages, TaskStatus } from './enums';
-import { Table } from 'react-bootstrap';
+import { Table, Modal, Button } from 'react-bootstrap';
 import Profile from './profile';
 
 class Dashboard extends Component {
@@ -37,7 +37,17 @@ class Dashboard extends Component {
                 status: "",
                 tags: "",
                 title: "",
-              }
+              },
+            alertDialogState: {
+                show: false,
+                title: "",
+                message: "",
+                isConfirm: false,
+                okButton: "",
+                cancelButton: "",
+                onClose: () => this.closeAlertDialog(),
+                onOk: () => this.closeAlertDialog()
+            }
         }
         this.loadTasks = this.loadTasks.bind(this);
     }
@@ -132,6 +142,63 @@ class Dashboard extends Component {
             showProfileModal: false
         });
     };
+
+    handleDeleteTask = (task) => {
+        this.setState({
+            alertDialogState: {
+                show: true,
+                isConfirm: true,
+                okButton: "Yes",
+                cancelButton: "No",
+                message: "Are you sure?",
+                title: "Delete Task",
+                onClose: () => this.closeAlertDialog(),
+                onOk: async () => {
+                    this.closeAlertDialog();
+
+                    let url = 'http://localhost:8080/tasks/' + task.id;
+                    const settings = {
+                        method: 'DELETE',
+                        headers: {
+                            Accept: 'application/json',
+                            'Content-Type': 'application/json',
+                            'Token': AuthService.getCurrentUser().token
+                        }
+                    };
+
+                    try {
+                        const res = await fetch(url, settings);
+
+                        if (!res.ok) {
+                            const message = `An error has occured: ${res.status} - ${res.statusText}`;
+                            throw new Error(message);
+                        }
+
+                        const data = await res.json();
+
+                        const result = {
+                            status: res.status + "-" + res.statusText,
+                            headers: {
+                                "Content-Type": res.headers.get("Content-Type"),
+                                "Content-Length": res.headers.get("Content-Length"),
+                            },
+                            length: res.headers.get("Content-Length"),
+                            data: data,
+                        };
+
+                        console.log(result.data);
+                        this.loadTasks(this.state.activePage);
+                    } catch (err) {
+                        console.log(err.message);
+                    }
+                }
+            }
+        });
+    };
+
+    closeAlertDialog = () => {
+        this.setState({ alertDialogState: {show: false }});
+    }
 
     logout() {
         localStorage.removeItem("user");
@@ -417,7 +484,7 @@ class Dashboard extends Component {
                                                             <td>
                                                                 <span className="p-relative">
                                                                     <button className="dropdown-btn transparent-btn" type="button" title="More info"
-                                                                    >
+                                                                    onClick={() => this.handleDeleteTask(item)}>
                                                                         <div className="sr-only">Delete</div>
                                                                         <i aria-hidden="true"><BsTrash/></i>
                                                                     </button>
@@ -433,6 +500,30 @@ class Dashboard extends Component {
                             </div>
                         </div>
                     </main>
+                </div>
+                <div>
+                    <Modal show={this.state.alertDialogState.show} onHide={() => this.state.alertDialogState.onClose}>
+                        <Modal.Header closeButton>
+                            <Modal.Title>{this.state.alertDialogState.title}</Modal.Title>
+                        </Modal.Header>
+
+                        <Modal.Body>{this.state.alertDialogState.message}</Modal.Body>
+
+                        <Modal.Footer>
+                            {this.state.alertDialogState.isConfirm ? (
+                                <Button variant="secondary" onClick={this.state.alertDialogState.onClose}>
+                                    {this.state.alertDialogState.cancelButton}
+                                </Button>
+                            ) : (
+                                <Button variant="secondary" onClick={this.state.alertDialogState.onClose}>
+                                    TEST
+                                </Button>
+                            )}
+                            <Button variant="primary" onClick={this.state.alertDialogState.onOk}>
+                                {this.state.alertDialogState.okButton}
+                            </Button>
+                        </Modal.Footer>
+                    </Modal>
                 </div>
             </div>
         );
