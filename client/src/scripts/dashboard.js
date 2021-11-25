@@ -97,6 +97,7 @@ class Dashboard extends Component {
                         title: "",
                       }
                 });
+                this.taskModal.current.loadHistory(0);
                 return;
             case DashboardPages.EDIT_TASK:
                 if (task) {

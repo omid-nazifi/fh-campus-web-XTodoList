@@ -159,6 +159,10 @@ class CreateTask extends Component {
 
 
     async loadHistory(taskId) {
+        if (taskId === 0) {
+            this.setState({histories: []});
+            return;
+        }
         let url = 'http://localhost:8080/histories/task/' + taskId;
         const settings = {
             method: 'GET',
