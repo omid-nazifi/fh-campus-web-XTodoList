@@ -4,6 +4,7 @@ import '../styles/dashboard.css';
 import Logo from '../img/logo512.png';
 import maleAvatar from '../img/avatar/avatar-illustrated-02.png';
 
+import AuthService from '../services/auth.service';
 import CreateTask from './createTask';
 import { DashboardPages, TaskStatus } from './enums';
 import { Table } from 'react-bootstrap';
@@ -14,7 +15,7 @@ class Dashboard extends Component {
         super(props);
 
         this.state = {
-            userId: 1, // TODO should be dynamic
+            userId: AuthService.getCurrentUser().id,
             pageTitle: "Dashboard",
             activePage: DashboardPages.BOARD,
             menuShowing: true,
@@ -104,12 +105,25 @@ class Dashboard extends Component {
         });
     };
 
+    logout() {
+        localStorage.removeItem("user");
+        this.props.history.push("/sign-in");
+    }
+
     componentDidMount() {
         this.loadTasks();
     }
 
     async loadTasks(page = DashboardPages.BOARD) {
         let url = 'http://localhost:8080/tasks/user/' + this.state.userId;
+        const settings = {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'Token' : AuthService.getCurrentUser().token
+            }
+        };
         switch (page) {
             case DashboardPages.TODO:
                 url += '/status/' + TaskStatus.TODO;
@@ -125,7 +139,7 @@ class Dashboard extends Component {
         }
 
         try {
-            const res = await fetch(url);
+            const res = await fetch(url, settings);
 
             if (!res.ok) {
                 const message = `An error has occured: ${res.status} - ${res.statusText}`;
@@ -221,6 +235,12 @@ class Dashboard extends Component {
                                         <span className="icon setting" aria-hidden="true"></span>Settings
                                     </a>
                                 </li>
+                                <li>
+                                    <a href="##"
+                                        onClick={() => this.logout()}>
+                                        <span aria-hidden="true"></span>Log out
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -295,7 +315,6 @@ class Dashboard extends Component {
                                         <span className="sr-only">My profile</span>
                                         <span className="nav-user-img">
                                             <img src={maleAvatar} alt="User name" />
-
                                         </span>
                                     </button>
                                     <ul className="users-item-dropdown nav-user-dropdown dropdown">
