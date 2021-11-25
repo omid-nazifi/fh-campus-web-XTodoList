@@ -112,12 +112,6 @@ class Dashboard extends Component {
                     activePage: DashboardPages.DONE,
                 });
                 break;
-            case DashboardPages.SETTINGS:
-                this.setState({
-                    pageTitle: 'Settings',
-                    activePage: DashboardPages.SETTINGS,
-                });
-                break;
             default:
                 this.setState({
                     pageTitle: 'List of all tasks',
@@ -328,18 +322,11 @@ class Dashboard extends Component {
                                     </a>
                                 </li>
                             </ul>
-                            <span className="system-menu__title">system</span>
                             <ul className="sidebar-body-menu">
-                                <li>
-                                    <a className={this.state.activePage === DashboardPages.SETTINGS ? "active" : ""} href="##"
-                                        onClick={() => this.handleShow(DashboardPages.SETTINGS)}>
-                                        <span className="icon setting" aria-hidden="true"></span>Settings
-                                    </a>
-                                </li>
                                 <li>
                                     <a href="##"
                                         onClick={() => this.logout()}>
-                                        <span aria-hidden="true"></span>Log out
+                                        <span className="icon logout" aria-hidden="true"></span>Log out
                                     </a>
                                 </li>
                             </ul>

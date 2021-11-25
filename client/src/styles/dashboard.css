@@ -1089,6 +1089,12 @@
    height: 24px;
    background-image: url("../img/svg/Bulk/Tick Square.svg");
  }
+
+ .logout {
+  width: 24px;
+  height: 24px;
+  background-image: url("../img/svg/Bulk/Logout.svg");
+}
  
  .message {
    background-image: url(../img/svg/Bulk/Message-white.svg);
