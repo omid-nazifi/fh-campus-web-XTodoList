@@ -8,7 +8,19 @@ class CreateTask extends Component {
     constructor() {
         super();
         this.state = {
-            color: "",
+            selectedTask: {
+                color: "#000000",
+                comments: [],
+                deadline: "",
+                description: "",
+                id: 0,
+                parentId: 0,
+                priority: "",
+                status: "",
+                tags: "",
+                title: "",
+            },
+            color: "#000000",
             deadline: "",
             description: "",
             priority: "",
@@ -58,7 +70,8 @@ class CreateTask extends Component {
             method: 'post',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Token': AuthService.getCurrentUser().token
             },
             body: JSON.stringify({
                 "color": this.state.color,
@@ -101,8 +114,8 @@ class CreateTask extends Component {
                 'Token': AuthService.getCurrentUser().token
             },
             body: JSON.stringify({
+                "id": this.props.selectedTask.id,
                 "color": this.state.color,
-                // "comments": this.state.comments,
                 "deadline": this.state.deadline,
                 "description": this.state.description,
                 "priority": this.state.priority,
@@ -130,11 +143,33 @@ class CreateTask extends Component {
         });
     }
 
-    componentDidUpdate(prevProps) {
-        if (this.props.selectedTask === {} || this.props.selectedTask.id !== prevProps.selectedTask.id) {
-            this.setState({ showServerMessage: false });
+    static getDerivedStateFromProps(props, state) {
+        if (props.selectedTask.id !== state.selectedTask.id) {
+            const task = props.selectedTask;
+            return {
+                color: task.color,
+                deadline: task.deadline,
+                description: task.description,
+                priority: task.priority,
+                taskStatus: task.status,
+                tags: task.tags,
+                title: task.title,
+                comments: task.comments,
+
+                serverMessage: "",
+                showServerMessage: false
+            };
         }
-      }
+
+        return null;
+    }
+
+
+    componentDidUpdate(prevProps) {
+        if (this.props.editMode === true) {
+            
+        }
+    }
 
     render() {
         const task = this.props.selectedTask;
@@ -156,7 +191,11 @@ class CreateTask extends Component {
                             <Form>
                                 <Row>
                                     <FloatingLabel controlId="taskTitle" label="Title" className="mb-3 form-input">
-                                        <Form.Control type="text" placeholder="Title" onChange={this.setTitle} defaultValue={task.title}/>
+                                        <Form.Control
+                                            type="text"
+                                            placeholder="Title"
+                                            onChange={this.setTitle}
+                                            defaultValue={task.title} />
                                     </FloatingLabel>
                                 </Row>
                                 <Row>
@@ -165,12 +204,13 @@ class CreateTask extends Component {
                                             as="textarea"
                                             placeholder="Description"
                                             style={{ height: '100px' }}
-                                            onChange={this.setDescription} />
+                                            onChange={this.setDescription}
+                                            defaultValue={task.description} />
                                     </FloatingLabel>
                                 </Row>
                                 <Row>
                                     <FloatingLabel controlId="taskPriority" label="Select Priority" className="mb-3 form-input">
-                                        <Form.Select aria-label="Priority">
+                                        <Form.Select aria-label="Priority" onChange={this.setPriority} defaultValue={task.priority}>
                                             <option>Select one</option>
                                             <option value="HIGH">High</option>
                                             <option value="NORMAL">Normal</option>
@@ -180,7 +220,7 @@ class CreateTask extends Component {
                                 </Row>
                                 <Row>
                                     <FloatingLabel controlId="taskStatus" label="Select Status" className="mb-3 form-input">
-                                        <Form.Select className="mb-3 form-input" aria-label="Status">
+                                        <Form.Select className="mb-3 form-input" aria-label="Status" onChange={this.setTaskStatus} defaultValue={task.status}>
                                             <option>Select one</option>
                                             <option value="TODO">ToDo</option>
                                             <option value="IN_PROGRESS">In Progress</option>
@@ -194,19 +234,27 @@ class CreateTask extends Component {
                                     <Form.Control
                                         type="color"
                                         id="colorInput"
-                                        defaultValue="#37c10b"
                                         title="Choose your color"
                                         onChange={this.setColor}
+                                        defaultValue={task.color}
                                     />
                                 </Row>
                                 <Row>
                                     <FloatingLabel controlId="taskDeadline" label="Deadline" className="mb-3 form-input">
-                                        <Form.Control type="text" placeholder="Deadline" onChange={this.setDeadline} />
+                                        <Form.Control
+                                            type="text"
+                                            placeholder="Deadline"
+                                            onChange={this.setDeadline}
+                                            defaultValue={task.deadline} />
                                     </FloatingLabel>
                                 </Row>
                                 <Row>
                                     <FloatingLabel controlId="taskTag" label="Tags" className="mb-3 form-input">
-                                        <Form.Control type="text" placeholder="tags,tag2, ..." onChange={this.setTags} />
+                                        <Form.Control
+                                            type="text"
+                                            placeholder="tags,tag2, ..."
+                                            onChange={this.setTags}
+                                            defaultValue={task.tags} />
                                     </FloatingLabel>
                                 </Row>
                             </Form>

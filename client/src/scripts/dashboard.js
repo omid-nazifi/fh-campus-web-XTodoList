@@ -26,8 +26,9 @@ class Dashboard extends Component {
             showProfileModal: false,
             profileModalTitle: '',
             taskList: [],
+            editMode: false,
             selectedTask: {
-                color: "",
+                color: "#000000",
                 comments: [],
                 deadline: "",
                 description: "",
@@ -81,7 +82,19 @@ class Dashboard extends Component {
                 this.setState({
                     showNewTaskModal: true,
                     newTaskModalTitle: 'Create new Task',
-                    selectedTask: {}
+                    editMode: false,
+                    selectedTask: {
+                        color: "#000000",
+                        comments: [],
+                        deadline: "",
+                        description: "",
+                        id: 0,
+                        parentId: 0,
+                        priority: "",
+                        status: "",
+                        tags: "",
+                        title: "",
+                      }
                 });
                 return;
             case DashboardPages.EDIT_TASK:
@@ -89,6 +102,7 @@ class Dashboard extends Component {
                     this.setState({
                         showNewTaskModal: true,
                         newTaskModalTitle: 'Edit TaskId ' + task.id,
+                        editMode: true,
                         selectedTask: task
                     });
                     // console.log(this.state.newTaskModalTitle);
@@ -288,6 +302,7 @@ class Dashboard extends Component {
                                         title={this.state.newTaskModalTitle}
                                         userId={this.state.userId}
                                         selectedTask={this.state.selectedTask}
+                                        editMode={this.state.editMode}
                                         onClick={this.handleCreateTaskModalClose}
                                         onHide={this.handleCreateTaskModalClose} />
                                     <Profile
