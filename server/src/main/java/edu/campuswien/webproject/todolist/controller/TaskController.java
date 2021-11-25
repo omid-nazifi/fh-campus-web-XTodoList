@@ -1,10 +1,7 @@
 package edu.campuswien.webproject.todolist.controller;
 
 import edu.campuswien.webproject.todolist.dto.TaskDto;
-import edu.campuswien.webproject.todolist.exception.ErrorModel;
-import edu.campuswien.webproject.todolist.exception.InputValidationException;
-import edu.campuswien.webproject.todolist.exception.SubErrorModel;
-import edu.campuswien.webproject.todolist.exception.ValidationError;
+import edu.campuswien.webproject.todolist.exception.*;
 import edu.campuswien.webproject.todolist.model.History;
 import edu.campuswien.webproject.todolist.model.HistoryEnum;
 import edu.campuswien.webproject.todolist.model.Status;
@@ -118,16 +115,16 @@ public class TaskController {
         return tasksData;
     }
 
-    /*TODO archive a task
     @CrossOrigin(origins="*")
     @DeleteMapping(path = "/tasks/{id}")
-    public Boolean deleteTask(@PathVariable long id) {
+    public Boolean deleteTask(@PathVariable long id) throws Exception {
         Optional<Task> task = taskService.getTaskById(id);
-        if(task.isPresent()) {
-            return convertToDto(task.get());
+        if(task.isEmpty()) {
+            throw new NotFoundDataException(new ErrorModel(HttpStatus.NOT_FOUND, "There is not a task with this Id!"),
+                    "Not found error in TaskController.delete()!");
         }
-        return new TaskDto(); //not exist
-    }*/
+        return taskService.deleteTask(task.get());
+    }
 
     private TaskDto convertToDto(Task task) {
         return modelMapper.map(task, TaskDto.class);

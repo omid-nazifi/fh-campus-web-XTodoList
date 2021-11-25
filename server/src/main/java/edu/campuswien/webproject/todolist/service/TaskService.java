@@ -48,4 +48,12 @@ public class TaskService {
     public List<Task> getTasksByUserId(long userId, Status status) {
         return taskRepository.findByUserIdAndStatusOrderByPriorityAsc(userId, status);
     }
+
+    public boolean deleteTask(Task task) {
+        if(task != null) {
+            taskRepository.delete(task);
+            return true;
+        }
+        return false;
+    }
 }
