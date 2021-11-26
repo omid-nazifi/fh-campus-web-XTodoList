@@ -5,7 +5,9 @@ The main purpose of the XTodoList is to keep track and "not forget anything". Ac
 
 <h2> Architiecture </h2>
 <p>
-  .....
+  <a target="_blank" rel="noopener noreferrer" href="/omid-nazifi/fh-campus-web-XTodoList/blob/main/architecture.png"  style="padding-left: 60px;">
+    <img src="images/BS-Page.png" alt="plot" style="max-width: 70%;">
+  </a>
 </p>
 
 <p>
