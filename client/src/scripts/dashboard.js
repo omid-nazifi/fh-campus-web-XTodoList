@@ -108,7 +108,6 @@ class Dashboard extends Component {
                         selectedTask: task
                     });
                     this.taskModal.current.loadHistory(task.id);
-                    // console.log(this.state.newTaskModalTitle);
                 }
                 return;
             case DashboardPages.TODO:
@@ -185,19 +184,6 @@ class Dashboard extends Component {
                             throw new Error(message);
                         }
 
-                        const data = await res.json();
-
-                        const result = {
-                            status: res.status + "-" + res.statusText,
-                            headers: {
-                                "Content-Type": res.headers.get("Content-Type"),
-                                "Content-Length": res.headers.get("Content-Length"),
-                            },
-                            length: res.headers.get("Content-Length"),
-                            data: data,
-                        };
-
-                        console.log(result.data);
                         this.loadTasks(this.state.activePage);
                     } catch (err) {
                         console.log(err.message);
@@ -264,7 +250,6 @@ class Dashboard extends Component {
                 data: data,
             };
 
-            console.log(result.data);
             this.setState({
                 taskList: result.data
             });
@@ -465,7 +450,7 @@ class Dashboard extends Component {
                                             <tbody>
                                                 {this.state.taskList.map((item, index) => {
                                                     return [
-                                                        <tr key={item.id}>
+                                                        <tr key={index}>
                                                             <td>{item.id}</td>
                                                             <td><BsSquareFill color={item.color}/></td>
                                                             <td>{item.title}</td>
@@ -473,22 +458,22 @@ class Dashboard extends Component {
                                                             <td>{item.modifiedTime}</td>
                                                             <td>
                                                             {[
-                                                                item.priority === "HIGH" ? <span className="priority-high">HIGH</span> : null,
-                                                                item.priority === "NORMAL" ? <span className="priority-normal">NORMAL</span> : null,
-                                                                item.priority === "LOW" ? <span className="priority-low">LOW</span> : null,
+                                                                item.priority === "HIGH" ? <span key={index} className="priority-high">HIGH</span> : null,
+                                                                item.priority === "NORMAL" ? <span key={index} className="priority-normal">NORMAL</span> : null,
+                                                                item.priority === "LOW" ? <span key={index} className="priority-low">LOW</span> : null,
                                                             ]
                                                             }
                                                             </td>
                                                             <td>{[
-                                                                item.status === "TODO" ? <span className="badge-disabled">ToDo</span> : null,
-                                                                item.status === "IN_PROGRESS" ? <span className="badge-active">In Progress</span> : null,
-                                                                item.status === "SUSPENDED" ? <span className="badge-pending">Suspended</span> : null,
-                                                                item.status === "DONE" ? <span className="badge-success">Done</span> : null
+                                                                item.status === "TODO" ? <span key={index} className="badge-disabled">ToDo</span> : null,
+                                                                item.status === "IN_PROGRESS" ? <span key={index} className="badge-active">In Progress</span> : null,
+                                                                item.status === "SUSPENDED" ? <span key={index} className="badge-pending">Suspended</span> : null,
+                                                                item.status === "DONE" ? <span key={index} className="badge-success">Done</span> : null
                                                             ]
                                                             }
                                                             </td>
                                                             <td>
-                                                                <span className="p-relative">
+                                                                <span key={index} className="p-relative">
                                                                     <button className="dropdown-btn transparent-btn" type="button" title="More info" value={item}
                                                                     onClick={() => this.handleShow(DashboardPages.EDIT_TASK, item)}>
                                                                         <div className="sr-only">Edit</div>
@@ -497,7 +482,7 @@ class Dashboard extends Component {
                                                                 </span>
                                                             </td>
                                                             <td>
-                                                                <span className="p-relative">
+                                                                <span key={index} className="p-relative">
                                                                     <button className="dropdown-btn transparent-btn" type="button" title="More info"
                                                                     onClick={() => this.handleDeleteTask(item)}>
                                                                         <div className="sr-only">Delete</div>

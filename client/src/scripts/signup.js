@@ -48,7 +48,6 @@ class SignUp extends Component {
     })
       .then((Response) => Response.json())
       .then((Result) => {
-        console.log(Result);
         if (Result.id != null) {
           alert(
             "Successfully registered new user! Navigating back to sign-in screen"
@@ -61,10 +60,10 @@ class SignUp extends Component {
   render() {
     return (
       <section>
-        <div class="container">
-          <div class="row d-flex justify-content-center align-items-center">
-            <div class="col-md-9 col-lg-6 col-xl-5">
-              <img src={banner} class="img-fluid" alt="Sign in banner" />
+        <div className="container">
+          <div className="row d-flex justify-content-center align-items-center">
+            <div className="col-md-9 col-lg-6 col-xl-5">
+              <img src={banner} className="img-fluid" alt="Sign in banner" />
             </div>
             <div className="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
               <Form
@@ -74,7 +73,7 @@ class SignUp extends Component {
               >
                 <h3>Sign Up</h3>
                 <FloatingLabel
-                  controlId="floatingInput"
+                  controlId="username"
                   label="Name"
                   className="mb-3"
                 >
@@ -90,7 +89,7 @@ class SignUp extends Component {
                 </FloatingLabel>
 
                 <FloatingLabel
-                  controlId="floatingInput"
+                  controlId="email"
                   label="Email address (or username)"
                   className="mb-3"
                 >
@@ -105,7 +104,7 @@ class SignUp extends Component {
                   </Form.Control.Feedback>
                 </FloatingLabel>
                 <FloatingLabel
-                  controlId="floatingPassword"
+                  controlId="password"
                   label="Password"
                   className="mb-3"
                 >
@@ -122,7 +121,7 @@ class SignUp extends Component {
                   </Form.Control.Feedback>
                 </FloatingLabel>
                 <FloatingLabel
-                  controlId="floatingPassword2"
+                  controlId="password2"
                   label="Confirm Password"
                 >
                   <Form.Control

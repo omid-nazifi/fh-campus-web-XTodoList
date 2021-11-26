@@ -44,7 +44,6 @@ class SignIn extends Component {
         if (result.token) {
           localStorage.setItem("user", JSON.stringify(result));
         }
-        console.log(result);
         if (result.status != null) {
           this.showErrors(result);
         } else {
@@ -72,7 +71,7 @@ class SignIn extends Component {
 
     return (
       <section>
-        <div class="container">
+        <div className="container">
           <Alert show={this.state.alert.show} variant="danger" dismissible
             onClose={() => this.setState({alert:{show:false, errorMsg:"", errors: []}})}>
             <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
@@ -85,11 +84,11 @@ class SignIn extends Component {
               ];
             })}
           </Alert>
-          <div class="row d-flex justify-content-center align-items-center h-100">
-            <div class="col-md-9 col-lg-6 col-xl-5">
-              <img src={banner} class="img-fluid" alt="Sign in banner" />
+          <div className="row d-flex justify-content-center align-items-center h-100">
+            <div className="col-md-9 col-lg-6 col-xl-5">
+              <img src={banner} className="img-fluid" alt="Sign in banner" />
             </div>
-            <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+            <div className="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
               <Form>
                 <h3>Sign In</h3>
                 <FloatingLabel
@@ -110,9 +109,9 @@ class SignIn extends Component {
                 >
                   <Form.Control type="password" placeholder="Password" />
                 </FloatingLabel>
-                <div class="d-flex justify-content-between align-items-center">
+                <div className="d-flex justify-content-between align-items-center">
                   {/* Checkbox */}
-                  <div class="form-check mb-0">
+                  <div className="form-check mb-0">
                     <Form.Check
                       inline
                       label="Remember me"
@@ -121,15 +120,15 @@ class SignIn extends Component {
                       id={`inline-checkbox-1`}
                     />
                   </div>
-                  <a href="#!" class="text-body">
+                  <a href="#!" className="text-body">
                     Forgot password?
                   </a>
                 </div>
-                <div class="text-center text-lg-start mt-4 pt-2">
+                <div className="text-center text-lg-start mt-4 pt-2">
                   <Button variant="primary" onClick={this.login}>
                     Login
                   </Button>
-                  <p class="small fw-bold mt-2 pt-1 mb-0">
+                  <p className="small fw-bold mt-2 pt-1 mb-0">
                     Don't have an account?
                     <Link to={"/sign-up"} className="link-danger">
                       Register

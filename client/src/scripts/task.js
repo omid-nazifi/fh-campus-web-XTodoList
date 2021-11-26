@@ -83,8 +83,6 @@ class Task extends Component {
             } else return response.json();
         }).then((data) => {
             if (data.id != null) {
-                // console.log(data);
-                //alert("Successfully created new task!");
                 this.props.onClick({ msg: "success" })
             }
             else
@@ -95,7 +93,6 @@ class Task extends Component {
     }
 
     update(event) {
-        console.log('update', this.state.selectedTask, event);
         fetch('http://localhost:8080/tasks', {
             method: 'put',
             headers: {
@@ -116,7 +113,6 @@ class Task extends Component {
             })
         }).then((response) => {
             if (!response.ok) {
-                console.log(response.json());
                 this.setState({ serverMessage: 'Something went wrong' });
                 this.setState({ showServerMessage: true });
                 throw new Error('Something went wrong');
@@ -134,9 +130,7 @@ class Task extends Component {
     }
 
     static getDerivedStateFromProps(props, state) {
-        console.log('getDerivedStateFromProps');
         if (props.selectedTask.id !== state.selectedTaskId) {
-            console.log('props.selectedTask', props.selectedTask.id, state.selectedTaskId);
             const task = props.selectedTask;
             return {
                 selectedTaskId: task.id,
@@ -183,17 +177,6 @@ class Task extends Component {
 
             const data = await res.json();
 
-            const result = {
-                status: res.status + "-" + res.statusText,
-                headers: {
-                    "Content-Type": res.headers.get("Content-Type"),
-                    "Content-Length": res.headers.get("Content-Length"),
-                },
-                length: res.headers.get("Content-Length"),
-                data: data,
-            };
-
-            console.log(result.data);
             this.setState({histories: data});
         } catch (err) {
             console.log(err.message);
@@ -295,7 +278,7 @@ class Task extends Component {
                                 <hr />
                                 {this.state.histories.map((item, index) => {
                                     return [
-                                        <ListGroup.Item>
+                                        <ListGroup.Item key={index}>
                                             <div>
                                                 <div>{item.text}</div>
                                                 <div className="small">{item.creationTime}</div>
