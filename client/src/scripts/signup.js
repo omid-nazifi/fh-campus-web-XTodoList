@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import banner from "../img/draw2.png";
 import { Link } from "react-router-dom";
-import { Button, FloatingLabel, Form } from "react-bootstrap";
+import { Button, FloatingLabel, Form, Alert } from "react-bootstrap";
 
 class SignUp extends Component {
   constructor() {
@@ -11,6 +11,12 @@ class SignUp extends Component {
       Email: "",
       Password: "",
       validated: false,
+      alert: {
+        variant: "danger",
+        show: false,
+        errorMsg: "",
+        errors: []
+      }
     };
     this.Username = this.Username.bind(this);
     this.Email = this.Email.bind(this);
@@ -48,19 +54,53 @@ class SignUp extends Component {
     })
       .then((Response) => Response.json())
       .then((Result) => {
-        if (Result.id != null) {
-          alert(
-            "Successfully registered new user! Navigating back to sign-in screen"
-          );
+        if (Result.status != null) {
+          this.showErrors(Result);
+        } else {
+          this.showSuccess();
           this.props.history.push("/sign-in");
-        } else alert("Something went wrong");
+        }
+        
       });
   }
+  showErrors(errorJson) {
+    this.setState({alert: {
+      variant: "danger",
+      show: true,
+      errorMsg: errorJson.message,
+      errors: errorJson.subErrors
+    }});
+}
+showSuccess() {
+  this.setState({alert: {
+    variant: "success",
+    show: true,
+    errorMsg: "",
+    errors: []
+  }});
+}
 
   render() {
+    let errors = [];
+    if (this.state.alert.errors && this.state.alert.errors.length > 0) {
+      errors = this.state.alert.errors;
+    } 
+
     return (
       <section>
         <div className="container">
+        <Alert show={this.state.alert.show} variant={this.state.alert.variant} dismissible
+            onClose={() => this.setState({alert:{show:false, errorMsg:"", errors: []}})}>
+            <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
+            <p>{this.state.alert.errorMsg}</p>
+            {errors.map((item, index) => {
+              return [
+                  <div>
+                    <div>{item.field}: {item.message}</div>
+                  </div>
+              ];
+            })}
+          </Alert>
           <div className="row d-flex justify-content-center align-items-center">
             <div className="col-md-9 col-lg-6 col-xl-5">
               <img src={banner} className="img-fluid" alt="Sign in banner" />
@@ -69,7 +109,6 @@ class SignUp extends Component {
               <Form
                 noValidate
                 validated={this.state.validated}
-                onSubmit={this.register}
               >
                 <h3>Sign Up</h3>
                 <FloatingLabel
@@ -134,7 +173,7 @@ class SignUp extends Component {
                   </Form.Control.Feedback>
                 </FloatingLabel>
                 <div className="text-center text-lg-start mt-4 pt-2">
-                  <Button variant="primary" type="submit">
+                  <Button variant="primary" onClick={this.register}>
                     Sign Up
                   </Button>
                   <p className="small fw-bold mt-2 pt-1 mb-0">
