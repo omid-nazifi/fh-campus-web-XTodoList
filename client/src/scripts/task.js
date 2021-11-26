@@ -254,7 +254,7 @@ class Task extends Component {
                                 <Row>
                                     <FloatingLabel controlId="taskDeadline" label="Deadline" className="mb-3 form-input">
                                         <Form.Control
-                                            type="text"
+                                            type="datetime-local"
                                             placeholder="Deadline"
                                             onChange={this.setDeadline}
                                             defaultValue={selectedTask.deadline} />
