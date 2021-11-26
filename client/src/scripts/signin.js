@@ -3,7 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import banner from "../img/draw2.png";
 
 import { Link } from "react-router-dom";
-import { Button, FloatingLabel, Form } from "react-bootstrap";
+import { Button, FloatingLabel, Form, Alert } from "react-bootstrap";
 
 class SignIn extends Component {
   constructor() {
@@ -11,6 +11,11 @@ class SignIn extends Component {
     this.state = {
       Email: "",
       Password: "",
+      alert: {
+        show: false,
+        errorMsg: "",
+        errors: []
+      }
     };
     this.Password = this.Password.bind(this);
     this.Email = this.Email.bind(this);
@@ -40,17 +45,46 @@ class SignIn extends Component {
           localStorage.setItem("user", JSON.stringify(result));
         }
         console.log(result);
-        if (result.status != null) alert("Invalid credentials!");
-        else {
+        if (result.status != null) {
+          this.showErrors(result);
+        } else {
+          this.setState({alert: {
+            show: false
+          }});
           this.props.history.push("/dashboard");
         }
       });
   }
 
+  showErrors(errorJson) {
+      this.setState({alert: {
+        show: true,
+        errorMsg: errorJson.message,
+        errors: errorJson.subErrors
+      }});
+  }
+
   render() {
+    let errors = [];
+    if (this.state.alert.errors && this.state.alert.errors.length > 0) {
+      errors = this.state.alert.errors;
+    } 
+
     return (
       <section>
         <div class="container">
+          <Alert show={this.state.alert.show} variant="danger" dismissible
+            onClose={() => this.setState({alert:{show:false, errorMsg:"", errors: []}})}>
+            <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
+            <p>{this.state.alert.errorMsg}</p>
+            {errors.map((item, index) => {
+              return [
+                  <div>
+                    <div>{item.field}: {item.message}</div>
+                  </div>
+              ];
+            })}
+          </Alert>
           <div class="row d-flex justify-content-center align-items-center h-100">
             <div class="col-md-9 col-lg-6 col-xl-5">
               <img src={banner} class="img-fluid" alt="Sign in banner" />
