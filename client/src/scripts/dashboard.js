@@ -5,7 +5,7 @@ import Logo from '../img/logo512.png';
 import maleAvatar from '../img/avatar/avatar-illustrated-02.png';
 
 import AuthService from '../services/auth.service';
-import CreateTask from './createTask';
+import Task from './task';
 import { DashboardPages, TaskStatus } from './enums';
 import { Table, Modal, Button } from 'react-bootstrap';
 import Profile from './profile';
@@ -300,7 +300,7 @@ class Dashboard extends Component {
                                     <a href="##" role="button" onClick={() => this.handleShow(DashboardPages.CREATE_TASK)}>
                                         <span className="icon new_task" aria-hidden="true"></span>New Task
                                     </a>
-                                    <CreateTask
+                                    <Task
                                         show={this.state.showNewTaskModal}
                                         title={this.state.newTaskModalTitle}
                                         userId={this.state.userId}

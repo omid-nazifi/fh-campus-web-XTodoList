@@ -3,7 +3,7 @@ import { Modal, Button, Container, FloatingLabel, Form, Row, Alert, ListGroup } 
 import '../styles/task.css';
 import AuthService from '../services/auth.service';
 
-class CreateTask extends Component {
+class Task extends Component {
 
     constructor() {
         super();
@@ -201,7 +201,7 @@ class CreateTask extends Component {
     }
 
     render() {
-        const task = this.props.selectedTask;
+        const selectedTask = this.props.selectedTask;
         return (
             <div>
                 <Modal show={this.props.show} onHide={() => this.props.onHide()}>
@@ -224,7 +224,7 @@ class CreateTask extends Component {
                                             type="text"
                                             placeholder="Title"
                                             onChange={this.setTitle}
-                                            defaultValue={task.title} />
+                                            defaultValue={selectedTask.title} />
                                     </FloatingLabel>
                                 </Row>
                                 <Row>
@@ -234,12 +234,12 @@ class CreateTask extends Component {
                                             placeholder="Description"
                                             style={{ height: '100px' }}
                                             onChange={this.setDescription}
-                                            defaultValue={task.description} />
+                                            defaultValue={selectedTask.description} />
                                     </FloatingLabel>
                                 </Row>
                                 <Row>
                                     <FloatingLabel controlId="taskPriority" label="Select Priority" className="mb-3 form-input">
-                                        <Form.Select aria-label="Priority" onChange={this.setPriority} defaultValue={task.priority}>
+                                        <Form.Select aria-label="Priority" onChange={this.setPriority} defaultValue={selectedTask.priority}>
                                             <option>Select one</option>
                                             <option value="HIGH">High</option>
                                             <option value="NORMAL">Normal</option>
@@ -249,7 +249,7 @@ class CreateTask extends Component {
                                 </Row>
                                 <Row>
                                     <FloatingLabel controlId="taskStatus" label="Select Status" className="mb-3 form-input">
-                                        <Form.Select className="mb-3 form-input" aria-label="Status" onChange={this.setTaskStatus} defaultValue={task.status}>
+                                        <Form.Select className="mb-3 form-input" aria-label="Status" onChange={this.setTaskStatus} defaultValue={selectedTask.status}>
                                             <option>Select one</option>
                                             <option value="TODO">ToDo</option>
                                             <option value="IN_PROGRESS">In Progress</option>
@@ -265,7 +265,7 @@ class CreateTask extends Component {
                                         id="colorInput"
                                         title="Choose your color"
                                         onChange={this.setColor}
-                                        defaultValue={task.color}
+                                        defaultValue={selectedTask.color}
                                     />
                                 </Row>
                                 <Row>
@@ -274,7 +274,7 @@ class CreateTask extends Component {
                                             type="text"
                                             placeholder="Deadline"
                                             onChange={this.setDeadline}
-                                            defaultValue={task.deadline} />
+                                            defaultValue={selectedTask.deadline} />
                                     </FloatingLabel>
                                 </Row>
                                 <Row>
@@ -283,7 +283,7 @@ class CreateTask extends Component {
                                             type="text"
                                             placeholder="tags,tag2, ..."
                                             onChange={this.setTags}
-                                            defaultValue={task.tags} />
+                                            defaultValue={selectedTask.tags} />
                                     </FloatingLabel>
                                 </Row>
                             </Form>
@@ -318,4 +318,4 @@ class CreateTask extends Component {
     };
 }
 
-export default CreateTask;
+export default Task;
