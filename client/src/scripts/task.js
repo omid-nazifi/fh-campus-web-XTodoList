@@ -264,7 +264,7 @@ class Task extends Component {
                                     <FloatingLabel controlId="taskTag" label="Tags" className="mb-3 form-input">
                                         <Form.Control
                                             type="text"
-                                            placeholder="tags,tag2, ..."
+                                            placeholder="#tags,#tag2, ..."
                                             onChange={this.setTags}
                                             defaultValue={selectedTask.tags} />
                                     </FloatingLabel>
