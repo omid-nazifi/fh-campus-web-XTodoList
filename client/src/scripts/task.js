@@ -273,7 +273,7 @@ class Task extends Component {
                         </Container>
                         <div>
                             <br/>
-                            <ListGroup>
+                            <ListGroup className={this.props.editMode ? "visible" : "invisible"}>
                                 <b>HISTORY</b>
                                 <hr />
                                 {this.state.histories.map((item, index) => {
